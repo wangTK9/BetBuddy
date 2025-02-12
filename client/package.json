@@ -1,0 +1,30 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@usecapsule/react-sdk": "^4.20.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.7.9",
+    "pinia": "^2.3.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite-plugin-node-polyfills": "^0.23.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.1.0"
+  }
+}
