@@ -44,3 +44,25 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+// add thêm để update user
+exports.updateUser = async (req, res) => {
+  try {
+    const { walletAddress } = req.params;
+    const { fullName, birthDate, email } = req.body;
+
+    // Tìm user theo walletAddress và cập nhật thông tin
+    const user = await User.findOneAndUpdate(
+      { walletAddress: walletAddress },
+      { fullName, birthDate, email },
+      { new: true } // Trả về bản ghi mới sau khi cập nhật
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi cập nhật dữ liệu", error });
+  }
+};

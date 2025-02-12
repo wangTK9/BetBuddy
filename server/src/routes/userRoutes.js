@@ -4,6 +4,7 @@ const userController = require("../controllers/userController"); // Import userC
 const router = express.Router();
 
 router.post("/register", userController.registerUser);
-router.get("/users", userController.getAllUsers); // Route lấy tất cả user
+router.get("/users", userController.getAllUsers);
+router.put("/update/:walletAddress", userController.updateUser); // Route cập nhật user
 
 module.exports = router;
