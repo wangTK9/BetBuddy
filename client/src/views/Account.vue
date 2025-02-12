@@ -6,6 +6,8 @@
         <p>
           <strong>Họ và tên:</strong> {{ user.fullName || "Chưa cập nhật" }}
         </p>
+        <p><strong>Bio:</strong> {{ user.bio || "Chưa cập nhật" }}</p>
+
         <p>
           <strong>Ngày sinh:</strong> {{ user.birthDate || "Chưa cập nhật" }}
         </p>
@@ -28,6 +30,9 @@
 
         <label>Email:</label>
         <input v-model="editUser.email" type="email" />
+
+        <label>Bio:</label>
+        <input v-model="editUser.bio" type="text" />
 
         <div class="btn-group">
           <button class="save-btn" @click="updateUser">Lưu</button>
@@ -52,6 +57,7 @@ const editUser = ref({
   fullName: "",
   birthDate: "",
   email: "",
+  bio: "",
 });
 
 // Lấy dữ liệu người dùng từ backend

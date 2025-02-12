@@ -64,6 +64,7 @@ const user = ref({
   walletAddress:
     authStore.walletAddress || localStorage.getItem("walletAddress") || "",
   email: "",
+  bio: "",
 });
 
 // Tính phần trăm progress bar

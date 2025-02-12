@@ -3,7 +3,7 @@ const User = require("../models/User");
 // Đăng ký hoặc cập nhật user
 exports.registerUser = async (req, res) => {
   try {
-    const { walletAddress, fullName, birthDate, email } = req.body;
+    const { walletAddress, fullName, birthDate, email, bio } = req.body;
 
     if (!walletAddress) {
       return res.status(400).json({ message: "Wallet address is required" });
@@ -17,6 +17,7 @@ exports.registerUser = async (req, res) => {
         fullName,
         birthDate,
         email,
+        bio,
       });
       await user.save();
     } else {
@@ -24,6 +25,7 @@ exports.registerUser = async (req, res) => {
       user.fullName = fullName || user.fullName;
       user.birthDate = birthDate || user.birthDate;
       user.email = email || user.email;
+      user.bio = bio || user.bio;
       await user.save();
     }
 
@@ -48,12 +50,12 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { walletAddress } = req.params;
-    const { fullName, birthDate, email } = req.body;
+    const { fullName, birthDate, email, bio } = req.body;
 
     // Tìm user theo walletAddress và cập nhật thông tin
     const user = await User.findOneAndUpdate(
       { walletAddress: walletAddress },
-      { fullName, birthDate, email },
+      { fullName, birthDate, email, bio },
       { new: true } // Trả về bản ghi mới sau khi cập nhật
     );
 
