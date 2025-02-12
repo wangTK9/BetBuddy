@@ -8,7 +8,7 @@ import Home from "./views/Home.vue";
 // import Market from "./views/Market.vue";
 // import Projects from "./views/Projects.vue";
 // import Support from "./views/Support.vue";
-// import Account from "./views/Account.vue";
+import Account from "./views/Account.vue";
 // import Create_project from "./views/Create_project.vue";
 // import Founder from "./views/Founder_register.vue";
 import Login from "./views/Login.vue";
@@ -40,7 +40,7 @@ const router = createRouter({
     // { path: "/market", component: Market },
     // { path: "/projects", component: Projects },
     // { path: "/support", component: Support },
-    // { path: "/account", component: Account },
+    { path: "/account", component: Account },
     // { path: "/create_project", component: Create_project },
     // { path: "/founder", component: Founder },
     { path: "/", component: Login },
