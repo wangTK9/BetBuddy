@@ -1,41 +1,43 @@
 <template>
-  <div class="account-container">
-    <div v-if="user" class="account-card">
-      <h2>Thông tin tài khoản</h2>
-      <div v-if="!isEditing" class="account-info">
-        <p>
-          <strong>Họ và tên:</strong> {{ user.fullName || "Chưa cập nhật" }}
-        </p>
-        <p>
-          <strong>Ngày sinh:</strong> {{ user.birthDate || "Chưa cập nhật" }}
-        </p>
-        <p><strong>Email:</strong> {{ user.email || "Chưa cập nhật" }}</p>
-        <p>
-          <strong>Wallet Address:</strong>
-          <span class="wallet">{{
-            user.walletAddress || "Chưa cập nhật"
-          }}</span>
-        </p>
-        <button class="edit-btn" @click="toggleEdit">Chỉnh sửa</button>
-      </div>
+  <div class="container-header-profile">
+    <div class="account-container">
+      <div v-if="user" class="account-card">
+        <h2>Thông tin tài khoản</h2>
+        <div v-if="!isEditing" class="account-info">
+          <p>
+            <strong>Họ và tên:</strong> {{ user.fullName || "Chưa cập nhật" }}
+          </p>
+          <p>
+            <strong>Ngày sinh:</strong> {{ user.birthDate || "Chưa cập nhật" }}
+          </p>
+          <p><strong>Email:</strong> {{ user.email || "Chưa cập nhật" }}</p>
+          <p>
+            <strong>Wallet Address:</strong>
+            <span class="wallet">{{
+              user.walletAddress || "Chưa cập nhật"
+            }}</span>
+          </p>
+          <button class="edit-btn" @click="toggleEdit">Chỉnh sửa</button>
+        </div>
 
-      <div v-else class="edit-form">
-        <label>Họ và tên:</label>
-        <input v-model="editUser.fullName" type="text" />
+        <div v-else class="edit-form">
+          <label>Họ và tên:</label>
+          <input v-model="editUser.fullName" type="text" />
 
-        <label>Ngày sinh:</label>
-        <input v-model="editUser.birthDate" type="date" />
+          <label>Ngày sinh:</label>
+          <input v-model="editUser.birthDate" type="date" />
 
-        <label>Email:</label>
-        <input v-model="editUser.email" type="email" />
+          <label>Email:</label>
+          <input v-model="editUser.email" type="email" />
 
-        <div class="btn-group">
-          <button class="save-btn" @click="updateUser">Lưu</button>
-          <button class="cancel-btn" @click="toggleEdit">Hủy</button>
+          <div class="btn-group">
+            <button class="save-btn" @click="updateUser">Lưu</button>
+            <button class="cancel-btn" @click="toggleEdit">Hủy</button>
+          </div>
         </div>
       </div>
+      <div v-else class="loading">Đang tải dữ liệu...</div>
     </div>
-    <div v-else class="loading">Đang tải dữ liệu...</div>
   </div>
 </template>
 
@@ -115,5 +117,9 @@ onMounted(fetchUser);
 </script>
 
 <style scoped>
-/* Các style cho component */
+.container-header-profile {
+  width: 500px;
+  height: 700px;
+  background-color: red;
+}
 </style>
