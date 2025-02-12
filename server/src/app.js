@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 
+// Import user routes
 const userRoutes = require("./routes/userRoutes");
 
 mongoose.set("strictQuery", false);
@@ -33,6 +34,11 @@ mongoose
 
 // API Routes
 app.use("/api/user", userRoutes);
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
