@@ -2,8 +2,10 @@ import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate"; // Import plugin
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import App from "./App.vue";
 import Home from "./views/Home.vue";
+
 // import About from "./views/About.vue";
 // import Market from "./views/Market.vue";
 // import Projects from "./views/Projects.vue";
