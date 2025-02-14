@@ -1,10 +1,13 @@
 <template>
-  <Navbar />
-  <div>đây là home</div>
+  <!-- <ChatList /> -->
 </template>
 
-<script setup>
-import Navbar from "../components/Navbar.vue";
-</script>
+<script>
+import ChatList from "../components/ChatList.vue";
 
-<style lang="scss" scoped></style>
+export default {
+  components: {
+    ChatList,
+  },
+};
+</script>

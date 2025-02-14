@@ -46,7 +46,8 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-// add thêm để update user
+
+// Cập nhật user theo walletAddress
 exports.updateUser = async (req, res) => {
   try {
     const { walletAddress } = req.params;
@@ -66,5 +67,24 @@ exports.updateUser = async (req, res) => {
     res.json({ message: "User updated successfully", user });
   } catch (error) {
     res.status(500).json({ message: "Lỗi cập nhật dữ liệu", error });
+  }
+};
+
+// 🔍 Tìm kiếm user theo email
+exports.searchUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ message: "Thiếu email để tìm kiếm" });
+    }
+
+    const users = await User.find({ email: { $regex: email, $options: "i" } }) // Không phân biệt hoa thường
+      .select("_id email fullName");
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Lỗi tìm kiếm người dùng:", error);
+    res.status(500).json({ message: "Lỗi server" });
   }
 };
