@@ -6,7 +6,6 @@
       <ul>
         <li><router-link to="/">Trang chủ</router-link></li>
         <li><router-link to="/about">Giới thiệu</router-link></li>
-        <li><router-link to="/contact">Liên hệ</router-link></li>
       </ul>
     </div>
   </nav>
