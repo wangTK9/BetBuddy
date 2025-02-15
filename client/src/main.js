@@ -13,6 +13,7 @@ import { io } from "socket.io-client";
 import { createSocket } from "./plugins/socket"; // Tạo plugin cho Socket.IO
 
 // Import FontAwesome icon
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {

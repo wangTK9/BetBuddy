@@ -17,17 +17,20 @@
 
     <!-- Hiển thị user tìm thấy -->
     <div v-if="searchedUser" class="searched-user">
-      <p><strong>Name:</strong> {{ searchedUser.fullName }}</p>
-      <p><strong>Email:</strong> {{ searchedUser.email }}</p>
-      <p><strong>Bio:</strong> {{ searchedUser.bio || "No bio available" }}</p>
+      <img
+        :src="'/public/avatar-trang-4.jpg'"
+        :alt="searchedUser.fullName"
+        class="searched-user-avatar"
+      />
+      <p class="searched-user-name">{{ searchedUser.fullName }}</p>
     </div>
 
     <!-- Active Users -->
     <div class="active-users">
-      <div class="active-user" v-for="user in activeUsers" :key="user.name">
+      <!-- <div class="active-user" v-for="user in activeUsers" :key="user.name">
         <img :src="user.image" :alt="user.name" />
         <div class="online-status"></div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Recent Chats -->
@@ -56,32 +59,8 @@ export default {
       searchQuery: "",
       searchedUser: null, // Lưu thông tin user tìm thấy
       loading: false, // Trạng thái loading khi tìm kiếm
-      activeUsers: [
-        {
-          name: "Patrick",
-          image: "https://randomuser.me/api/portraits/men/1.jpg",
-        },
-        {
-          name: "Doris",
-          image: "https://randomuser.me/api/portraits/women/2.jpg",
-        },
-      ],
-      chats: [
-        {
-          name: "Albert Rodarte",
-          message: "typing...",
-          time: "",
-          color: "#a78bfa",
-          initial: "A",
-        },
-        {
-          name: "Mirta George",
-          message: "Yeah everything is fine",
-          time: "12/07",
-          color: "#60a5fa",
-          initial: "M",
-        },
-      ],
+      activeUsers: [],
+      chats: JSON.parse(localStorage.getItem("recentChats")) || [],
     };
   },
   computed: {
@@ -114,10 +93,29 @@ export default {
         );
         console.log("📥 API Response:", response.data); // Debug log
         this.searchedUser = response.data.length > 0 ? response.data[0] : null; // Lấy user đầu tiên
+
+        if (this.searchedUser) {
+          this.addToRecentChats(this.searchedUser);
+        }
       } catch (error) {
         console.error("User not found", error);
         this.searchedUser = null;
       }
+    },
+    addToRecentChats(user) {
+      const newChat = {
+        name: user.fullName,
+        message: "Recently searched",
+        time: new Date().toLocaleDateString(),
+        color: "#fbbf24",
+        initial: user.fullName.charAt(0).toUpperCase(),
+      };
+      // Remove any existing chat with the same name
+      this.chats = this.chats.filter((chat) => chat.name !== user.fullName);
+      // Add the new chat to the beginning of the array
+      this.chats.unshift(newChat);
+      // Save to local storage
+      localStorage.setItem("recentChats", JSON.stringify(this.chats));
     },
   },
 };
@@ -125,32 +123,131 @@ export default {
 
 <style scoped>
 .chat-container {
-  max-width: 400px;
-  margin: auto;
-  background: white;
+  width: 100%;
   padding: 15px;
+  background-color: #f9f9f9;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
 }
+
 .search-bar {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
   outline: none;
+  font-size: 16px;
 }
+
 .searched-user {
-  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  background: #fff;
   padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.searched-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.searched-user-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.active-users {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.active-user {
+  position: relative;
+}
+
+.active-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #4caf50;
+}
+
+.online-status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.chat-list {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.chat-item:last-child {
+  border-bottom: none;
+}
+
+.chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.chat-info {
+  flex-grow: 1;
+}
+
+.chat-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.chat-message {
+  font-size: 14px;
+  color: #666;
+}
+
+.chat-time {
+  font-size: 12px;
+  color: #999;
 }
 </style>
