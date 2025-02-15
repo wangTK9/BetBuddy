@@ -1,7 +1,14 @@
 <template>
-  <div>đây là home</div>
+  <!-- <ChatList /> -->
+  <Navbar />
 </template>
 
-<script setup></script>
+<script>
+import Navbar from "../components//Navbar.vue";
 
-<style lang="scss" scoped></style>
+export default {
+  components: {
+    Navbar,
+  },
+};
+</script>
