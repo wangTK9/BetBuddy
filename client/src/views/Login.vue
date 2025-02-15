@@ -40,7 +40,7 @@
 
       <!-- Bước 4 -->
       <div v-else-if="step === 4" class="step-container">
-        <h2>Bước 4: Đăng nhập</h2>
+        <h2>Bước 4: Đăng nhập nè</h2>
         <input type="email" v-model="user.email" placeholder="Nhập email" />
         <button class="login-btn" @click="login">🔑 Đăng nhập</button>
       </div>

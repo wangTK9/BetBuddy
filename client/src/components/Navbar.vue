@@ -2,39 +2,81 @@
   <div class="container">
     <div class="sidebar">
       <div class="logo">
-        <i class="fas fa-chart-bar icon" style="color: #6b46c1;"></i>
+        <i class="fas fa-chart-bar icon" style="color: #6b46c1"></i>
       </div>
-      
-      <div class="icon-container" :class="{ 'icon-active-container': activeIcon === 'bell' }" @click="setActiveIcon('bell')">
-        <i class="fas fa-bell icon" :class="{ 'icon-active': activeIcon === 'bell' }"></i>
+
+      <div
+        class="icon-container"
+        :class="{ 'icon-active-container': activeIcon === 'bell' }"
+        @click="setActiveIcon('bell')"
+      >
+        <i
+          class="fas fa-bell icon"
+          :class="{ 'icon-active': activeIcon === 'bell' }"
+        ></i>
       </div>
-      
-      <div class="icon-container" :class="{ 'icon-active-container': activeIcon === 'comment' }" @click="setActiveIcon('comment')">
-        <i class="fas fa-comment-dots icon" :class="{ 'icon-active': activeIcon === 'comment' }"></i>
+
+      <div
+        class="icon-container"
+        :class="{ 'icon-active-container': activeIcon === 'comment' }"
+        @click="setActiveIcon('comment')"
+      >
+        <i
+          class="fas fa-comment-dots icon"
+          :class="{ 'icon-active': activeIcon === 'comment' }"
+        ></i>
       </div>
-      
-      <div class="icon-container" :class="{ 'icon-active-container': activeIcon === 'users' }" @click="setActiveIcon('users')">
-        <i class="fas fa-users icon" :class="{ 'icon-active': activeIcon === 'users' }"></i>
+
+      <div
+        class="icon-container"
+        :class="{ 'icon-active-container': activeIcon === 'users' }"
+        @click="setActiveIcon('users')"
+      >
+        <i
+          class="fas fa-users icon"
+          :class="{ 'icon-active': activeIcon === 'users' }"
+        ></i>
       </div>
-      
-      <div class="icon-container" :class="{ 'icon-active-container': activeIcon === 'user-friends' }" @click="setActiveIcon('user-friends')">
-        <i class="fas fa-user-friends icon" :class="{ 'icon-active': activeIcon === 'user-friends' }"></i>
+
+      <div
+        class="icon-container"
+        :class="{ 'icon-active-container': activeIcon === 'user-friends' }"
+        @click="setActiveIcon('user-friends')"
+      >
+        <i
+          class="fas fa-user-friends icon"
+          :class="{ 'icon-active': activeIcon === 'user-friends' }"
+        ></i>
       </div>
-      
-      <div class="icon-container" :class="{ 'icon-active-container': activeIcon === 'cog' }" @click="setActiveIcon('cog')">
-        <i class="fas fa-cog icon" :class="{ 'icon-active': activeIcon === 'cog' }"></i>
+
+      <div
+        class="icon-container"
+        :class="{ 'icon-active-container': activeIcon === 'cog' }"
+        @click="setActiveIcon('cog')"
+      >
+        <i
+          class="fas fa-cog icon"
+          :class="{ 'icon-active': activeIcon === 'cog' }"
+        ></i>
       </div>
-      
-      <div class="icon-container" style="margin-top: 25px;" @click="toggleTheme">
+
+      <div class="icon-container" style="margin-top: 25px" @click="toggleTheme">
         <!-- Biểu tượng mặt trăng hoặc mặt trời -->
-        <i :class="isNightMode ? 'fas fa-moon' : 'fas fa-sun'" class="icon-gray"></i>
+        <i
+          :class="isNightMode ? 'fas fa-moon' : 'fas fa-sun'"
+          class="icon-gray"
+        ></i>
       </div>
 
       <div class="avatar-container">
         <!-- Avatar -->
-        <img ref="avatar" alt="User profile picture" class="avatar"
+        <img
+          ref="avatar"
+          alt="User profile picture"
+          class="avatar"
           src="https://storage.googleapis.com/a1aa/image/7lBa4dTLolp7p8szWr9BosdarMGGKMwOqwk4lK7epn4.jpg"
-          @click="toggleDropdown" />
+          @click="toggleDropdown"
+        />
 
         <!-- Dropdown -->
         <div ref="dropdown" class="dropdown" :class="{ show: isDropdownOpen }">
@@ -47,10 +89,23 @@
 
     <div class="data-tab-engine">
       <h2>Data Tab Engine</h2>
+      <div v-if="activeIcon === 'bell'">
+        <p>Notifications content goes here.</p>
+      </div>
+      <div v-if="activeIcon === 'comment'">
+        <ChatList />
+      </div>
+      <div v-if="activeIcon === 'users'"></div>
+      <div v-if="activeIcon === 'user-friends'">
+        <p>Friends content goes here.</p>
+      </div>
+      <div v-if="activeIcon === 'cog'">
+        <p>Settings content goes here.</p>
+      </div>
     </div>
-
-    <div class="data-tab-chat">
-      <h2>Data Tab Chat</h2>
+    <!-- không được thay đổi phần này -->
+    <div class="chat-place">
+      <h2>hiển thị chat ở đây</h2>
     </div>
   </div>
 </template>
@@ -187,7 +242,7 @@ body {
   color: #4a5568;
 }
 
-.data-tab-chat {
+.chat-place {
   width: 950px;
   background-color: #f7fafc;
   border-left: 1px solid #e2e8f0;
@@ -208,12 +263,17 @@ body {
 </style>
 
 <script>
+import ChatList from "../components/ChatList.vue";
+
 export default {
+  components: {
+    ChatList,
+  },
   data() {
     return {
-      activeIcon: '', // Lưu trữ công cụ đang được chọn
+      activeIcon: "", // Lưu trữ công cụ đang được chọn
       isDropdownOpen: false,
-      isNightMode: false
+      isNightMode: false,
     };
   },
   methods: {
@@ -235,13 +295,13 @@ export default {
     },
     toggleTheme() {
       this.isNightMode = !this.isNightMode;
-    }
+    },
   },
   mounted() {
     document.addEventListener("click", this.closeDropdown);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.closeDropdown);
-  }
+  },
 };
 </script>
