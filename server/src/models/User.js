@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema(
     birthDate: { type: String, required: true },
     walletAddress: { type: String, required: true, unique: true },
     email: { type: String, required: false },
+    bio: { type: String, required: false },
   },
   { timestamps: true }
 );
