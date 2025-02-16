@@ -11,9 +11,8 @@
 <script>
 import ChatBox from "../components/ChatBox.vue";
 import { useAuthStore } from "../stores/auth";
-import { defineComponent, onMounted } from "vue";
 
-export default defineComponent({
+export default {
   components: { ChatBox },
   data() {
     return {
@@ -25,23 +24,16 @@ export default defineComponent({
       return useAuthStore();
     },
     userId() {
-      const id = this.authStore.walletAddress; // Giả sử walletAddress là userId của bạn
-      console.log("User Wallet Address:", id); // Debug log
-      return id;
+      return this.authStore.walletAddress; // Giả sử đây là ID người dùng
     },
   },
   watch: {
     "authStore.selectedUserWalletAddress": {
       immediate: true,
-      handler(newSelectedUserWalletAddress) {
-        this.receiver = newSelectedUserWalletAddress;
-        console.log("Receiver Wallet Address:", this.receiver); // Debug log
+      handler(newReceiver) {
+        this.receiver = newReceiver;
       },
     },
   },
-  mounted() {
-    this.receiver = this.authStore.selectedUserWalletAddress;
-    console.log("Receiver Wallet Address on mount:", this.receiver); // Debug log
-  },
-});
+};
 </script>

@@ -6,9 +6,9 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 
-// const chatRoutes = require("./routes/chatRoutes");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const Message = require("./models/Message"); // Import model Message
 
 mongoose.set("strictQuery", false);
 dotenv.config();
@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app); // Tạo server HTTP
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Cho phép frontend kết nối
+    origin: "*", // Cho phép frontend kết nối
     methods: ["GET", "POST"],
   },
 });
@@ -45,7 +45,6 @@ mongoose
 
 // API Routes
 app.use("/api/user", userRoutes);
-// app.use("/api/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 
 // 🔥 **Xử lý Socket.io để chat theo thời gian thực**
@@ -54,10 +53,14 @@ io.on("connection", (socket) => {
 
   // Nhận tin nhắn từ client và phát lại cho mọi người
   socket.on("sendMessage", async ({ sender, message }) => {
-    const newMessage = new Chat({ sender, message });
-    await newMessage.save();
+    try {
+      const newMessage = new Message({ sender, message });
+      await newMessage.save();
 
-    io.emit("receiveMessage", { sender, message, timestamp: new Date() });
+      io.emit("receiveMessage", { sender, message, timestamp: new Date() });
+    } catch (error) {
+      console.error("❌ Error saving message:", error);
+    }
   });
 
   socket.on("disconnect", () => {

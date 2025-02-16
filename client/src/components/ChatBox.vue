@@ -42,10 +42,15 @@ export default {
   async created() {
     this.socket = io(this.backendUrl);
 
+    // Tham gia phòng chat với userId của người dùng
     this.socket.emit("join", this.userId);
 
+    // Lắng nghe tin nhắn từ server
     this.socket.on("receiveMessage", (msg) => {
-      if (msg.sender === this.receiver || msg.receiver === this.receiver) {
+      if (
+        (msg.sender === this.receiver && msg.receiver === this.userId) ||
+        (msg.sender === this.userId && msg.receiver === this.receiver)
+      ) {
         this.messages.push(msg);
       }
     });
@@ -76,7 +81,10 @@ export default {
         // Gửi tin nhắn lên server
         await axios.post(`${this.backendUrl}/messages`, newMsg);
 
-        // Cập nhật UI
+        // Gửi tin nhắn qua socket ngay lập tức
+        this.socket.emit("sendMessage", newMsg);
+
+        // Cập nhật UI ngay lập tức
         this.messages.push(newMsg);
         this.message = "";
       } catch (error) {
