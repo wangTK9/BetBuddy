@@ -47,27 +47,29 @@ mongoose
 app.use("/api/user", userRoutes);
 app.use("/messages", messageRoutes);
 
-// 🔥 **Xử lý Socket.io để chat theo thời gian thực**
-const users = {}; // Lưu user đang online (userId -> socketId)
+
+const users = {}; // Lưu danh sách người dùng đang online (userId -> socketId)
 
 io.on("connection", (socket) => {
-  console.log("⚡️ A user connected:", socket.id);
+  console.log(`⚡️ A user connected: ${socket.id}`);
 
-  // Khi user vào, lưu socketId
+  // Khi người dùng kết nối, lưu socketId
   socket.on("join", (userId) => {
+    console.log(`User ${userId} is trying to join.`);
     users[userId] = socket.id;
-    console.log("👥 Online users:", users);
+    console.log("👥 Online users:", users); // Kiểm tra danh sách người dùng trực tuyến
   });
 
   // Nhận tin nhắn từ client
   socket.on("sendMessage", async ({ sender, receiver, message }) => {
     try {
+      // Giả sử bạn đã có mã để lưu tin nhắn vào cơ sở dữ liệu
       const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
-  
+
       // Tìm socket của người nhận
       const receiverSocketId = users[receiver];
-  
+
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", {
           sender,
@@ -75,28 +77,29 @@ io.on("connection", (socket) => {
           message,
           timestamp: new Date(),
         });
-      } else {
-        console.log(`User ${receiver} is offline`);
       }
     } catch (error) {
       console.error("❌ Error saving message:", error);
-      // Gửi phản hồi lỗi cho client nếu cần
-      socket.emit("error", "Error saving message.");
     }
   });
-  
 
-  // Khi user rời đi, xóa khỏi danh sách
+  // Xử lý ngắt kết nối
   socket.on("disconnect", () => {
+    console.log("A user disconnected, checking user list...");
+
+    // Xóa người dùng khỏi danh sách khi mất kết nối
     for (let userId in users) {
       if (users[userId] === socket.id) {
         delete users[userId];
+        console.log(`${userId} has disconnected`);
         break;
       }
     }
-    console.log("❌ A user disconnected:", socket.id);
+
+    console.log("👥 Online users:", users); // Kiểm tra lại danh sách người dùng
   });
 });
+
 
 // Khởi động server
 const PORT = process.env.PORT || 5000;

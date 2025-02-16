@@ -137,7 +137,7 @@ export default {
       }
 
       // Gửi yêu cầu API với axios
-      axios.post('/api/poll', {
+      axios.post('http://localhost:5000/api/poll', {
         question: this.question,
         options: this.options,
         settings: {
@@ -166,7 +166,7 @@ export default {
         console.error("Đã có lỗi xảy ra khi gửi dữ liệu:", error);
         this.$emit('error', 'Đã có lỗi xảy ra khi gửi dữ liệu.');
       });
-    },
+          },
 
     toggleSettings() {
       this.settingsOpen = !this.settingsOpen;

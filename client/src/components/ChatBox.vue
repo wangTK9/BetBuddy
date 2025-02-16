@@ -36,10 +36,10 @@ export default {
       message: "",
       messages: [],
       socket: null,
-      backendUrl: "http://localhost:5000",
+      backendUrl: "http://localhost:5000", // Cập nhật URL của backend
     };
   },
-  async created() {
+    async created() {
     this.socket = io(this.backendUrl);
 
     // Gửi userId lên server khi kết nối
@@ -58,20 +58,22 @@ export default {
 
     await this.loadMessages();
   },
-  methods: {
+    methods: {
     async loadMessages() {
       try {
         const res = await axios.get(
           `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
         );
         this.messages = res.data;
-        this.$nextTick(this.scrollToBottom);
+        this.$nextTick(() => {
+          this.scrollToBottom(); // Cuộn đến cuối khi tải tin nhắn
+        });
       } catch (error) {
         console.error("Lỗi tải tin nhắn:", error);
       }
     },
     async sendMessage() {
-      if (!this.message.trim()) return;
+      if (!this.message.trim()) return; // Kiểm tra xem tin nhắn có trống không
 
       const newMsg = {
         sender: this.userId,
@@ -80,11 +82,18 @@ export default {
       };
 
       try {
+        // Gửi tin nhắn vào backend (Lưu vào database)
         await axios.post(`${this.backendUrl}/messages`, newMsg);
+
+        // Gửi tin nhắn qua socket cho người nhận
         this.socket.emit("sendMessage", newMsg);
+
+        // Thêm tin nhắn vào danh sách và làm trống ô nhập
         this.messages.push(newMsg);
-        this.message = "";
-        this.$nextTick(this.scrollToBottom);
+        this.message = ""; // Reset input
+        this.$nextTick(() => {
+          this.scrollToBottom(); // Cuộn xuống cuối khi gửi tin nhắn
+        });
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
       }
@@ -99,37 +108,60 @@ export default {
 <style>
 .chat-container {
   width: 300px;
+  height: 400px;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
+
 .chat-header {
   text-align: center;
   font-weight: bold;
+  margin-bottom: 10px;
 }
+
 .chat-messages {
-  height: 300px;
+  flex-grow: 1;
   overflow-y: auto;
   padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
+
 .sent {
   text-align: right;
   color: blue;
 }
+
 .received {
   text-align: left;
   color: green;
 }
+
 .chat-input {
   display: flex;
   gap: 5px;
 }
+
 .chat-input input {
   flex: 1;
   padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
+
 .chat-input button {
   padding: 5px;
+  border: 1px solid #ddd;
+  background-color: #0071c2;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #005a99;
 }
 </style>
