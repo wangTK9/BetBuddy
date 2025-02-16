@@ -36,7 +36,7 @@ export default {
       message: "",
       messages: [],
       socket: null,
-      backendUrl: "http://localhost:5000", // Cập nhật URL của backend
+      backendUrl: "http://localhost:5000",
       isSending: false,
     };
   },
@@ -50,57 +50,46 @@ export default {
       console.log("❌ WebSocket bị mất kết nối!");
     });
 
-    // Gửi userId lên server khi kết nối
     this.socket.emit("join", this.userId);
 
-    // Nhận tin nhắn theo thời gian thực
     this.socket.on("receiveMessage", (msg) => {
       console.log("Nhận tin nhắn qua socket:", msg);
-      if (
-        (msg.sender === this.receiver && msg.receiver === this.userId) ||
-        (msg.sender === this.userId && msg.receiver === this.receiver)
-      ) {
-        // Tránh việc nhận tin nhắn trùng lặp
-        const messageExists = this.messages.some((m) => m._id === msg._id);
-        if (!messageExists) {
-          this.messages.push(msg); // Thêm tin nhắn vào danh sách
-          this.$nextTick(this.scrollToBottom); // Cuộn đến cuối khi nhận tin nhắn mới
-        }
+      const messageExists = this.messages.some((m) => m._id === msg._id);
+      if (!messageExists) {
+        this.messages = [...this.messages, msg];
+        this.$nextTick(this.scrollToBottom);
       }
     });
 
-    // Tải các tin nhắn cũ
     await this.loadMessages();
   },
 
   methods: {
-    // Cuộn đến cuối khi có tin nhắn mới
     scrollToBottom() {
-      const chatMessages = this.$refs.chatMessages;
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      this.$nextTick(() => {
+        const chatMessages = this.$refs.chatMessages;
+        if (chatMessages) {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      });
     },
 
-    // Tải các tin nhắn cũ
     async loadMessages() {
       try {
         const res = await axios.get(
           `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
         );
         this.messages = res.data;
-        console.log("Tải tin nhắn cũ:", this.messages); // In ra tin nhắn cũ tải về
-        this.$nextTick(() => {
-          this.scrollToBottom(); // Cuộn đến cuối khi tải tin nhắn
-        });
+        console.log("📜 Tin nhắn đã tải:", this.messages);
+        this.$nextTick(this.scrollToBottom);
       } catch (error) {
         console.error("Lỗi tải tin nhắn:", error);
       }
     },
 
-    // Gửi tin nhắn mới
     async sendMessage() {
       if (!this.message.trim() || this.isSending) return;
-
-      this.isSending = true; // Đánh dấu là đang gửi tin nhắn
+      this.isSending = true;
 
       const newMsg = {
         sender: this.userId,
@@ -109,30 +98,21 @@ export default {
       };
 
       try {
-        // Gửi tin nhắn vào backend (Lưu vào database)
         const response = await axios.post(
           `${this.backendUrl}/messages`,
           newMsg
         );
-        newMsg._id = response.data._id; // Gán _id trả về từ backend
+        newMsg._id = response.data._id;
+        console.log("📤 Gửi tin nhắn:", newMsg);
 
-        // In ra tin nhắn gửi đi
-        console.log("Gửi tin nhắn:", newMsg);
-
-        // Gửi tin nhắn qua socket cho người nhận
         this.socket.emit("sendMessage", newMsg);
-        console.log("Đã gửi tin nhắn qua socket:", newMsg);
-
-        // Thêm tin nhắn vào danh sách và làm trống ô nhập
-        this.messages.push(newMsg);
-        this.message = ""; // Reset input
-        this.$nextTick(() => {
-          this.scrollToBottom(); // Cuộn xuống cuối khi gửi tin nhắn
-        });
+        this.messages = [...this.messages, newMsg];
+        this.message = "";
+        this.$nextTick(this.scrollToBottom);
       } catch (error) {
-        console.error("Lỗi gửi tin nhắn:", error);
+        console.error("❌ Lỗi gửi tin nhắn:", error);
       } finally {
-        this.isSending = false; // Đánh dấu là đã gửi xong
+        this.isSending = false;
       }
     },
   },
