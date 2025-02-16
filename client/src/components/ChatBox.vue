@@ -20,7 +20,7 @@
         placeholder="Nhập tin nhắn..."
         @keyup.enter="sendMessage"
       />
-      <button @click="sendMessage">Gửi</button>
+      <button @click="sendMessage" :disabled="isSending">Gửi</button>
     </div>
   </div>
 </template>
@@ -37,27 +37,39 @@ export default {
       messages: [],
       socket: null,
       backendUrl: "http://localhost:5000", // Cập nhật URL của backend
+      isSending: false,
     };
   },
-    async created() {
-    this.socket = io(this.backendUrl);
+  async created() {
+  this.socket = io(this.backendUrl);
 
-    // Gửi userId lên server khi kết nối
-    this.socket.emit("join", this.userId);
+  // Xác nhận kết nối thành công với server WebSocket
+  this.socket.on("connect", () => {
+    console.log("Connected to socket server with id:", this.socket.id);
+  });
 
-    // Nhận tin nhắn theo thời gian thực
-    this.socket.on("receiveMessage", (msg) => {
-      if (
-        (msg.sender === this.receiver && msg.receiver === this.userId) ||
-        (msg.sender === this.userId && msg.receiver === this.receiver)
-      ) {
-        this.messages.push(msg);
-        this.$nextTick(this.scrollToBottom);
+  // Gửi userId lên server khi kết nối
+  this.socket.emit("join", this.userId);
+
+  // Nhận tin nhắn theo thời gian thực
+  this.socket.on("receiveMessage", (msg) => {
+    // Kiểm tra tin nhắn hợp lệ (sender và receiver đúng)
+    if (
+      (msg.sender === this.receiver && msg.receiver === this.userId) ||
+      (msg.sender === this.userId && msg.receiver === this.receiver)
+    ) {
+      // Tránh việc nhận tin nhắn trùng lặp
+      if (!this.messages.find(m => m._id === msg._id)) {
+        this.messages.push(msg); // Thêm tin nhắn vào danh sách
+        this.$nextTick(this.scrollToBottom); // Cuộn đến cuối khi nhận tin nhắn mới
       }
-    });
+    }
+  });
 
-    await this.loadMessages();
-  },
+  // Tải các tin nhắn cũ
+  await this.loadMessages();
+},
+
     methods: {
     async loadMessages() {
       try {
@@ -73,7 +85,9 @@ export default {
       }
     },
     async sendMessage() {
-      if (!this.message.trim()) return; // Kiểm tra xem tin nhắn có trống không
+      if (!this.message.trim() || this.isSending) return;
+
+      this.isSending = true; // Đánh dấu là đang gửi tin nhắn
 
       const newMsg = {
         sender: this.userId,
@@ -96,10 +110,9 @@ export default {
         });
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
+      } finally {
+        this.isSending = false; // Đánh dấu là đã gửi xong
       }
-    },
-    scrollToBottom() {
-      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
     },
   },
 };
