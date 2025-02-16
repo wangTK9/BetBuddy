@@ -47,11 +47,13 @@ export default {
 
     // Lắng nghe tin nhắn từ server
     this.socket.on("receiveMessage", (msg) => {
+      console.log("Received message:", msg); // Log nhận tin nhắn
       if (
         (msg.sender === this.receiver && msg.receiver === this.userId) ||
         (msg.sender === this.userId && msg.receiver === this.receiver)
       ) {
         this.messages.push(msg);
+        console.log("Updated messages:", this.messages); // Log cập nhật tin nhắn
       }
     });
 
@@ -64,6 +66,7 @@ export default {
           `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
         );
         this.messages = res.data;
+        console.log("Loaded messages:", this.messages); // Log tải tin nhắn
       } catch (error) {
         console.error("Lỗi tải tin nhắn:", error);
       }
@@ -83,10 +86,12 @@ export default {
 
         // Gửi tin nhắn qua socket ngay lập tức
         this.socket.emit("sendMessage", newMsg);
+        console.log("Sent message:", newMsg); // Log gửi tin nhắn
 
         // Cập nhật UI ngay lập tức
         this.messages.push(newMsg);
         this.message = "";
+        console.log("Updated messages:", this.messages); // Log cập nhật tin nhắn
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
       }
