@@ -1,68 +1,135 @@
 <template>
   <div class="chat-container">
-    <div v-for="msg in messages" :key="msg._id" class="message">
-      <span :class="{ 'my-message': msg.sender === userId }">
-        {{ msg.message }}
-      </span>
+    <div ref="chatMessages" class="messages">
+      <div v-for="msg in messages" :key="msg._id" class="message">
+        <span :class="{ 'my-message': msg.sender === userId }">
+          {{ msg.message }}
+        </span>
+      </div>
     </div>
     <input
       v-model="newMessage"
       @keyup.enter="sendMessage"
       placeholder="Nhập tin nhắn..."
+      :disabled="isSending"
     />
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { io } from "socket.io-client";
 import axios from "axios";
 
 export default {
-  setup() {
-    const socket = io("http://localhost:5000");
+  props: ["userId", "receiver"],
+  setup(props) {
+    const backendUrl = "http://localhost:5000";
+    const socket = io(backendUrl);
     const messages = ref([]);
     const newMessage = ref("");
-    const userId = ref("celestia1ea5c4jqwqqrns0h445kvygyted75pkvtla2udh"); // Thay bằng ID thật
-    const receiver = ref("celestia1ysknsdezjsuf0vwlddqqezr3ajdugtxl2y66q6"); // Thay bằng ID người nhận
+    const isSending = ref(false);
+    const chatMessages = ref(null);
 
-    // Tham gia phòng chat
+    // 🚀 Kết nối socket & tải tin nhắn
     onMounted(async () => {
-      socket.emit("join", userId.value);
-      const res = await axios.get(
-        `http://localhost:5000/messages/${userId.value}/${receiver.value}`
+      console.log(
+        "✅ ChatBox mounted, userId:",
+        props.userId,
+        "receiver:",
+        props.receiver
       );
-      messages.value = res.data;
-    });
 
-    // Lắng nghe tin nhắn mới từ server
-    socket.on("receiveMessage", (msg) => {
-      if (
-        (msg.sender === receiver.value && msg.receiver === userId.value) ||
-        (msg.sender === userId.value && msg.receiver === receiver.value)
-      ) {
-        if (!messages.value.some((m) => m._id === msg._id)) {
-          messages.value.push(msg);
+      // Xác nhận kết nối thành công
+      socket.on("connect", () => {
+        console.log("🔗 Connected to socket server, ID:", socket.id);
+      });
+
+      // Tham gia phòng chat
+      socket.emit("join", props.userId);
+      console.log("📢 Joined chat room:", props.userId);
+
+      // Lắng nghe tin nhắn
+      socket.on("receiveMessage", (msg) => {
+        console.log("📩 Received message:", msg);
+
+        if (
+          (msg.sender === props.receiver && msg.receiver === props.userId) ||
+          (msg.sender === props.userId && msg.receiver === props.receiver)
+        ) {
+          if (!messages.value.find((m) => m._id === msg._id)) {
+            messages.value.push(msg);
+            nextTick(scrollToBottom);
+          }
         }
-      }
+      });
+
+      // Tải tin nhắn từ backend
+      await loadMessages();
     });
 
-    // Gửi tin nhắn
-    const sendMessage = () => {
-      if (newMessage.value.trim() === "") return;
-
-      const messageData = {
-        sender: userId.value,
-        receiver: receiver.value,
-        message: newMessage.value,
-      };
-
-      socket.emit("sendMessage", messageData);
-      messages.value.push({ ...messageData, _id: Date.now() }); // Hiển thị ngay trên giao diện
-      newMessage.value = "";
+    // 🚀 Tải tin nhắn từ backend
+    const loadMessages = async () => {
+      try {
+        const res = await axios.get(
+          `${backendUrl}/messages/${props.userId}/${props.receiver}`
+        );
+        messages.value = res.data;
+        console.log("📜 Loaded messages:", messages.value);
+        nextTick(scrollToBottom);
+      } catch (error) {
+        console.error("❌ Error loading messages:", error);
+      }
     };
 
-    return { messages, newMessage, sendMessage };
+    // 🚀 Gửi tin nhắn
+    const sendMessage = async () => {
+      if (!newMessage.value.trim() || isSending.value) return;
+
+      isSending.value = true;
+      const messageData = {
+        sender: props.userId,
+        receiver: props.receiver,
+        message: newMessage.value.trim(),
+      };
+
+      try {
+        console.log("🚀 Sending message:", messageData);
+        const response = await axios.post(
+          `${backendUrl}/messages`,
+          messageData
+        );
+        messageData._id = response.data._id;
+
+        // Gửi tin nhắn qua socket
+        socket.emit("sendMessage", messageData);
+        console.log("📤 Message sent via socket:", messageData);
+
+        messages.value.push(messageData);
+        newMessage.value = "";
+        nextTick(scrollToBottom);
+      } catch (error) {
+        console.error("❌ Error sending message:", error);
+      } finally {
+        isSending.value = false;
+      }
+    };
+
+    // 🚀 Cuộn xuống cuối cùng
+    const scrollToBottom = () => {
+      if (chatMessages.value) {
+        chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
+      }
+    };
+
+    // 🚀 Dọn dẹp khi thoát khỏi component
+    onUnmounted(() => {
+      console.log("❌ ChatBox unmounted, cleaning up socket...");
+      socket.off("receiveMessage");
+      socket.disconnect();
+    });
+
+    return { messages, newMessage, sendMessage, isSending, chatMessages };
   },
 };
 </script>
@@ -74,6 +141,10 @@ export default {
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
+}
+.messages {
+  height: 350px;
+  overflow-y: auto;
 }
 .message {
   margin: 5px 0;
