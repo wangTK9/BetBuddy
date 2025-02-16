@@ -23,8 +23,8 @@ export default {
     const socket = io("http://localhost:5000");
     const messages = ref([]);
     const newMessage = ref("");
-    const userId = ref("user1"); // Thay bằng ID thật
-    const receiver = ref("user2"); // Thay bằng ID người nhận
+    const userId = ref("celestia1ea5c4jqwqqrns0h445kvygyted75pkvtla2udh"); // Thay bằng ID thật
+    const receiver = ref("celestia1ysknsdezjsuf0vwlddqqezr3ajdugtxl2y66q6"); // Thay bằng ID người nhận
 
     // Tham gia phòng chat
     onMounted(async () => {
