@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
     walletAddress: null,
+    selectedUserWalletAddress: null, // Đổi tên để rõ ràng hơn
   }),
   actions: {
     login(walletAddress) {
@@ -13,8 +15,19 @@ export const useAuthStore = defineStore("auth", {
     logout() {
       this.isAuthenticated = false;
       this.walletAddress = null;
+      this.selectedUserWalletAddress = null;
+    },
+    setSelectedUserWalletAddress(walletAddress) {
+      this.selectedUserWalletAddress = walletAddress;
     },
   },
-  // Bật tính năng persist, lưu toàn bộ state vào localStorage
-  persist: true,
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: "auth",
+        storage: localStorage,
+      },
+    ],
+  },
 });

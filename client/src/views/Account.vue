@@ -165,12 +165,34 @@ const updateUser = async () => {
   height: 700px;
   max-height: 700px;
   overflow-y: auto; /* Chỉ cuộn theo chiều dọc */
-  overscroll-behavior: contain;
+  overscroll-behavior: contain !important;
+  scrollbar-width: thin !important; /* Dành cho Firefox */
+  scrollbar-color: #888 transparent; /* Màu thanh cuộn */
   background: #f5f7fb;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -0%);
 }
+
+/* Giảm kích thước thanh cuộn trên Chrome, Edge, Safari */
+.container_profile-user::-webkit-scrollbar {
+  width: 1px !important;  /* Độ rộng thanh cuộn (mặc định 16px, nên giảm nhỏ lại) */
+}
+
+.container_profile-user::-webkit-scrollbar-thumb {
+  background: #888 !important; /* Màu thanh cuộn */
+  border-radius: 10px !important; /* Bo tròn thanh cuộn */
+}
+
+.container_profile-user::-webkit-scrollbar-thumb:hover {
+  background: #555 !important; /* Màu khi di chuột vào */
+}
+
+/* Ẩn hoàn toàn thanh cuộn nếu không cần thiết */
+.container_profile-user::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
 
 .select_main-profile {
   display: flex;

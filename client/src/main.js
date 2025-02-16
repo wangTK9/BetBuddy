@@ -12,7 +12,7 @@ import Home from "./views/Home.vue";
 // import Support from "./views/Support.vue";
 import Account from "./views/Account.vue";
 import Login from "./views/Login.vue";
-import Chat from "./views/Chat.vue";
+import Chat from "./views/ChatView.vue";
 import Poll from "./views/Poll.vue";
 
 

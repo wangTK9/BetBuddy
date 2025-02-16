@@ -88,9 +88,9 @@
     </div>
 
     <div class="data-tab-engine">
-      <h2>Data Tab Engine</h2>
+      
       <div v-if="activeIcon === 'bell'">
-        <p>Notifications content goes here.</p>
+        <UserProfile />
       </div>
       <div v-if="activeIcon === 'comment'">
         <ChatList />
@@ -264,10 +264,12 @@ body {
 
 <script>
 import ChatList from "../components/ChatList.vue";
+import UserProfile from "../components/UserProfile.vue";
 
 export default {
   components: {
     ChatList,
+    UserProfile,
   },
   data() {
     return {

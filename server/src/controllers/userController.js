@@ -80,7 +80,7 @@ exports.searchUserByEmail = async (req, res) => {
     }
 
     const users = await User.find({ email: { $regex: email, $options: "i" } }) // Không phân biệt hoa thường
-      .select("_id email fullName");
+      .select("_id email fullName walletAddress");
 
     res.status(200).json(users);
   } catch (error) {
