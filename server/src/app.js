@@ -64,10 +64,10 @@ io.on("connection", (socket) => {
     try {
       const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
-
+  
       // Tìm socket của người nhận
       const receiverSocketId = users[receiver];
-
+  
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", {
           sender,
@@ -75,11 +75,16 @@ io.on("connection", (socket) => {
           message,
           timestamp: new Date(),
         });
+      } else {
+        console.log(`User ${receiver} is offline`);
       }
     } catch (error) {
       console.error("❌ Error saving message:", error);
+      // Gửi phản hồi lỗi cho client nếu cần
+      socket.emit("error", "Error saving message.");
     }
   });
+  
 
   // Khi user rời đi, xóa khỏi danh sách
   socket.on("disconnect", () => {

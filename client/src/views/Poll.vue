@@ -1,77 +1,78 @@
 <template>
   <div class="container_poll-main">
-  <div class="poll-container" :class="{ expanded: settingsOpen }">
-    <div class="poll-content">
-      <button class="close-btn" @click="closeForm">×</button>
-      <h2>Tạo bình chọn</h2>
-      <textarea v-model="question" placeholder="Đặt câu hỏi bình chọn" maxlength="200"></textarea>
-      <div class="char-count">{{ charCount }}/200</div>
-      
-      <div class="options">
-        <div class="option-item" v-for="(option, index) in options" :key="index">
-          <input type="text" v-model="option.text" :placeholder="'Lựa chọn ' + (index + 1)">
-          <button v-if="index >= 2" @click="removeOption(index)" class="remove-option">X</button>
-        </div>
-        <button @click="addOption" id="addOption">+ Thêm lựa chọn</button>
-      </div>
-      
-      <div class="bottom-bar">
-        <div class="left-buttons">
-          <button @click="cancel">Hủy</button>
-          <button :disabled="!canCreate" @click="create">Tạo bình chọn</button>
-        </div>
-        <button id="settingsBtn" @click="toggleSettings">⚙️</button>
-      </div>
-    </div>
+    <div class="poll-container" :class="{ expanded: settingsOpen }">
+      <div class="poll-content">
+        <button class="close-btn" @click="closeForm">×</button>
+        <h2>Tạo bình chọn</h2>
+        <textarea v-model="question" placeholder="Đặt câu hỏi bình chọn" maxlength="200"></textarea>
+        <div class="char-count">{{ charCount }}/200</div>
 
-    <div class="settings-container" :class="{ open: settingsOpen }">
-      <h3>Cài đặt</h3>
-      <label id="header-setting">Thời hạn bình chọn</label>
-      <input type="text" ref="datetime" placeholder="Chọn thời gian kết thúc">
-      <div class="hr_content">
-        <hr>
+        <div class="options">
+          <div class="option-item" v-for="(option, index) in options" :key="index">
+            <input type="text" v-model="option.text" :placeholder="'Lựa chọn ' + (index + 1)">
+            <button v-if="index >= 2" @click="removeOption(index)" class="remove-option">X</button>
+          </div>
+          <button @click="addOption" id="addOption">+ Thêm lựa chọn</button>
+        </div>
+
+        <div class="bottom-bar">
+          <div class="left-buttons">
+            <button @click="cancel">Hủy</button>
+            <button :disabled="!canCreate" @click="create">Tạo bình chọn</button>
+          </div>
+          <button id="settingsBtn" @click="toggleSettings">⚙️</button>
+        </div>
       </div>
-      <label id="header-setting">Thiết lập nâng cao</label>
-      <label>
-        <span>Ghim lên đầu trò chuyện</span>
-        <label class="toggle-switch">
-          <input type="checkbox" v-model="pinChat">
-          <span class="slider"></span>
+
+      <div class="settings-container" :class="{ open: settingsOpen }">
+        <h3>Cài đặt</h3>
+        <label id="header-setting">Thời hạn bình chọn</label>
+        <input type="text" ref="datetime" placeholder="Chọn thời gian kết thúc">
+        <div class="hr_content">
+          <hr>
+        </div>
+        <label id="header-setting">Thiết lập nâng cao</label>
+        <label>
+          <span>Ghim lên đầu trò chuyện</span>
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="pinChat">
+            <span class="slider"></span>
+          </label>
         </label>
-      </label>
-      <label>
-        <span>Chọn nhiều phương án</span>
-        <label class="toggle-switch">
-          <input type="checkbox" v-model="multipleOptions" checked>
-          <span class="slider"></span>
+        <label>
+          <span>Chọn nhiều phương án</span>
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="multipleOptions" checked>
+            <span class="slider"></span>
+          </label>
         </label>
-      </label>
-      <label>
-        <span>Có thể thêm phương án</span>
-        <label class="toggle-switch">
-          <input type="checkbox" v-model="canAddOptions">
-          <span class="slider"></span>
+        <label>
+          <span>Có thể thêm phương án</span>
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="canAddOptions">
+            <span class="slider"></span>
+          </label>
         </label>
-      </label>
-      <div class="hr_content">
-        <hr>
+        <div class="hr_content">
+          <hr>
+        </div>
+        <label id="header-setting">Bình chọn ẩn danh</label>
+        <label>
+          <span>Ẩn người bình chọn</span>
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="anonymous">
+            <span class="slider"></span>
+          </label>
+        </label>
       </div>
-      <label id="header-setting">Bình chọn ẩn danh</label>
-      <label>
-        <span>Ẩn người bình chọn</span>
-        <label class="toggle-switch">
-          <input type="checkbox" v-model="anonymous">
-          <span class="slider"></span>
-        </label>
-      </label>
     </div>
   </div>
-</div>
 </template>
 
 <script>
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import axios from 'axios';
 
 export default {
   data() {
@@ -86,6 +87,7 @@ export default {
       multipleOptions: true,
       canAddOptions: true,
       anonymous: false,
+      expirationTime: null,  // Thêm trường expirationTime để lưu thời gian hết hạn
     };
   },
   computed: {
@@ -94,7 +96,7 @@ export default {
     },
     canCreate() {
       // Kiểm tra xem câu hỏi và các lựa chọn có hợp lệ không
-      return this.question.length > 0 && this.options.every(option => option.text.length > 10);
+      return this.question.length > 0 && this.options.every(option => option.text.length > 0);
     },
   },
   methods: {
@@ -115,8 +117,27 @@ export default {
       this.$emit('cancel');
     },
     create() {
-      // Gửi dữ liệu bình chọn khi bấm nút Tạo bình chọn
-      this.$emit('create', {
+      // Lấy thời gian hết hạn từ flatpickr
+      const expiration = this.$refs.datetime.value
+        ? new Date(this.$refs.datetime.value).toISOString()
+        : null;
+
+      // Kiểm tra tính hợp lệ của câu hỏi và các lựa chọn
+      if (!this.question || !this.options.every(option => option.text.length > 0)) {
+        this.$emit('error', 'Câu hỏi hoặc lựa chọn không hợp lệ!');
+        console.log("Lỗi: Câu hỏi hoặc lựa chọn không hợp lệ.");
+        return;
+      }
+
+      // Kiểm tra thời gian hết hạn
+      if (expiration && isNaN(new Date(expiration).getTime())) {
+        this.$emit('error', 'Thời gian hết hạn không hợp lệ!');
+        console.log("Lỗi: Thời gian hết hạn không hợp lệ.");
+        return;
+      }
+
+      // Gửi yêu cầu API với axios
+      axios.post('/api/poll', {
         question: this.question,
         options: this.options,
         settings: {
@@ -124,9 +145,29 @@ export default {
           multipleOptions: this.multipleOptions,
           canAddOptions: this.canAddOptions,
           anonymous: this.anonymous,
+          expirationTime: expiration,
         },
+      })
+      .then(response => {
+        console.log("Dữ liệu bình chọn đã được gửi thành công:", response.data);
+        this.$emit('create', {
+          question: this.question,
+          options: this.options,
+          settings: {
+            pinChat: this.pinChat,
+            multipleOptions: this.multipleOptions,
+            canAddOptions: this.canAddOptions,
+            anonymous: this.anonymous,
+            expirationTime: expiration, 
+          },
+        });
+      })
+      .catch(error => {
+        console.error("Đã có lỗi xảy ra khi gửi dữ liệu:", error);
+        this.$emit('error', 'Đã có lỗi xảy ra khi gửi dữ liệu.');
       });
     },
+
     toggleSettings() {
       this.settingsOpen = !this.settingsOpen;
     },
@@ -136,11 +177,11 @@ export default {
     flatpickr(this.$refs.datetime, {
       enableTime: true,
       dateFormat: "Y-m-d H:i",
+      allowInput: true,  // Cho phép nhập trực tiếp thời gian
     });
   },
 };
 </script>
-
 
 
 <style scoped>

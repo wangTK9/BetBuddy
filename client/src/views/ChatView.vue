@@ -4,7 +4,12 @@
     <label>Người nhận: </label>
     <input v-model="receiver" placeholder="Nhập ID người nhận" />
 
-    <ChatBox v-if="receiver" :userId="userId" :receiver="receiver" />
+    <ChatBox
+      v-if="receiver"
+      :userId="userId"
+      :receiver="receiver"
+      @sendMessage="handleSendMessage"
+    />
   </div>
 </template>
 
@@ -33,6 +38,12 @@ export default {
       handler(newReceiver) {
         this.receiver = newReceiver;
       },
+    },
+  },
+  methods: {
+    handleSendMessage({ sender, receiver, message }) {
+      // Gửi tin nhắn qua Socket.io
+      this.$socket.emit("sendMessage", { sender, receiver, message });
     },
   },
 };
