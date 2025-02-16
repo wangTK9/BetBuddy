@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
   // Khi người dùng kết nối, lưu socketId
   socket.on("join", (userId) => {
     console.log(`User ${userId} joined.`);
+    console.log(`👥 User ${userId} đã vào phòng chat.`);
     users[userId] = socket.id;
     console.log("👥 Online users:", users);
   });
@@ -69,18 +70,6 @@ io.on("connection", (socket) => {
   // Nhận tin nhắn từ client
   socket.on("sendMessage", async ({ sender, receiver, message }) => {
     try {
-      // Kiểm tra nếu tin nhắn giống hệt đã có trong DB
-      const existingMessage = await Message.findOne({
-        sender,
-        receiver,
-        message,
-      }).exec();
-
-      if (existingMessage) {
-        console.log("❌ Tin nhắn này đã tồn tại trong DB.");
-        return; // Không gửi lại tin nhắn nếu đã tồn tại
-      }
-
       const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
 
