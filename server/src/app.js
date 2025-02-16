@@ -48,22 +48,47 @@ app.use("/api/user", userRoutes);
 app.use("/messages", messageRoutes);
 
 // 🔥 **Xử lý Socket.io để chat theo thời gian thực**
+const users = {}; // Lưu user đang online (userId -> socketId)
+
 io.on("connection", (socket) => {
   console.log("⚡️ A user connected:", socket.id);
 
-  // Nhận tin nhắn từ client và phát lại cho mọi người
-  socket.on("sendMessage", async ({ sender, message }) => {
+  // Khi user vào, lưu socketId
+  socket.on("join", (userId) => {
+    users[userId] = socket.id;
+    console.log("👥 Online users:", users);
+  });
+
+  // Nhận tin nhắn từ client
+  socket.on("sendMessage", async ({ sender, receiver, message }) => {
     try {
-      const newMessage = new Message({ sender, message });
+      const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
 
-      io.emit("receiveMessage", { sender, message, timestamp: new Date() });
+      // Tìm socket của người nhận
+      const receiverSocketId = users[receiver];
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receiveMessage", {
+          sender,
+          receiver,
+          message,
+          timestamp: new Date(),
+        });
+      }
     } catch (error) {
       console.error("❌ Error saving message:", error);
     }
   });
 
+  // Khi user rời đi, xóa khỏi danh sách
   socket.on("disconnect", () => {
+    for (let userId in users) {
+      if (users[userId] === socket.id) {
+        delete users[userId];
+        break;
+      }
+    }
     console.log("❌ A user disconnected:", socket.id);
   });
 });

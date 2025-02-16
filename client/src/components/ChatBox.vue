@@ -4,7 +4,7 @@
       <h2>Chat với {{ receiver }}</h2>
     </div>
 
-    <div class="chat-messages">
+    <div class="chat-messages" ref="chatMessages">
       <div
         v-for="msg in messages"
         :key="msg._id"
@@ -42,18 +42,17 @@ export default {
   async created() {
     this.socket = io(this.backendUrl);
 
-    // Tham gia phòng chat với userId của người dùng
+    // Gửi userId lên server khi kết nối
     this.socket.emit("join", this.userId);
 
-    // Lắng nghe tin nhắn từ server
+    // Nhận tin nhắn theo thời gian thực
     this.socket.on("receiveMessage", (msg) => {
-      console.log("Received message:", msg); // Log nhận tin nhắn
       if (
         (msg.sender === this.receiver && msg.receiver === this.userId) ||
         (msg.sender === this.userId && msg.receiver === this.receiver)
       ) {
         this.messages.push(msg);
-        console.log("Updated messages:", this.messages); // Log cập nhật tin nhắn
+        this.$nextTick(this.scrollToBottom);
       }
     });
 
@@ -66,7 +65,7 @@ export default {
           `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
         );
         this.messages = res.data;
-        console.log("Loaded messages:", this.messages); // Log tải tin nhắn
+        this.$nextTick(this.scrollToBottom);
       } catch (error) {
         console.error("Lỗi tải tin nhắn:", error);
       }
@@ -81,20 +80,17 @@ export default {
       };
 
       try {
-        // Gửi tin nhắn lên server
         await axios.post(`${this.backendUrl}/messages`, newMsg);
-
-        // Gửi tin nhắn qua socket ngay lập tức
         this.socket.emit("sendMessage", newMsg);
-        console.log("Sent message:", newMsg); // Log gửi tin nhắn
-
-        // Cập nhật UI ngay lập tức
         this.messages.push(newMsg);
         this.message = "";
-        console.log("Updated messages:", this.messages); // Log cập nhật tin nhắn
+        this.$nextTick(this.scrollToBottom);
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
       }
+    },
+    scrollToBottom() {
+      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
     },
   },
 };
