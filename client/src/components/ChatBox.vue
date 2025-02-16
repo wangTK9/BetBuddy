@@ -57,10 +57,7 @@ export default {
           (msg.sender === props.receiver && msg.receiver === props.userId) ||
           (msg.sender === props.userId && msg.receiver === props.receiver)
         ) {
-          if (!messages.value.find((m) => m._id === msg._id)) {
-            messages.value.push(msg);
-            nextTick(scrollToBottom);
-          }
+          addMessage(msg);
         }
       });
 
@@ -74,11 +71,19 @@ export default {
         const res = await axios.get(
           `${backendUrl}/messages/${props.userId}/${props.receiver}`
         );
-        messages.value = res.data;
+        res.data.forEach(addMessage);
         console.log("📜 Loaded messages:", messages.value);
         nextTick(scrollToBottom);
       } catch (error) {
         console.error("❌ Error loading messages:", error);
+      }
+    };
+
+    // 🚀 Thêm tin nhắn với kiểm tra trùng lặp
+    const addMessage = (msg) => {
+      if (!messages.value.find((m) => m._id === msg._id)) {
+        messages.value.push(msg);
+        nextTick(scrollToBottom);
       }
     };
 
@@ -105,9 +110,8 @@ export default {
         socket.emit("sendMessage", messageData);
         console.log("📤 Message sent via socket:", messageData);
 
-        messages.value.push(messageData);
+        addMessage(messageData);
         newMessage.value = "";
-        nextTick(scrollToBottom);
       } catch (error) {
         console.error("❌ Error sending message:", error);
       } finally {
