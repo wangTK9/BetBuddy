@@ -51,7 +51,14 @@ const users = {}; // Lưu danh sách người dùng đang online (userId -> sock
 
 io.on("connection", (socket) => {
   console.log(`⚡️ A user connected: ${socket.id}`);
+  socket.on("sendMessage", (msg) => {
+    console.log("📩 Server nhận tin nhắn:", msg);
+    io.emit("receiveMessage", msg); // Gửi tin nhắn cho tất cả client
+  });
 
+  socket.on("disconnect", () => {
+    console.log(`❌ Client ngắt kết nối: ${socket.id}`);
+  });
   // Khi người dùng kết nối, lưu socketId
   socket.on("join", (userId) => {
     console.log(`User ${userId} joined.`);
@@ -63,16 +70,20 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async ({ sender, receiver, message }) => {
     try {
       // Kiểm tra nếu tin nhắn giống hệt đã có trong DB
-      const existingMessage = await Message.findOne({ sender, receiver, message }).exec();
-  
+      const existingMessage = await Message.findOne({
+        sender,
+        receiver,
+        message,
+      }).exec();
+
       if (existingMessage) {
         console.log("❌ Tin nhắn này đã tồn tại trong DB.");
         return; // Không gửi lại tin nhắn nếu đã tồn tại
       }
-  
+
       const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
-  
+
       const savedMessage = {
         _id: newMessage._id,
         sender,
@@ -80,9 +91,9 @@ io.on("connection", (socket) => {
         message,
         timestamp: newMessage.createdAt,
       };
-  
+
       const receiverSocketId = users[receiver];
-  
+
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", savedMessage);
       } else {
@@ -92,7 +103,6 @@ io.on("connection", (socket) => {
       console.error("❌ Error saving message:", error);
     }
   });
-  
 
   // Xử lý ngắt kết nối
   socket.on("disconnect", () => {

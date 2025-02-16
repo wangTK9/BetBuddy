@@ -43,9 +43,11 @@ export default {
   async created() {
     this.socket = io(this.backendUrl);
 
-    // Xác nhận kết nối thành công với server WebSocket
     this.socket.on("connect", () => {
-      console.log("Connected to socket server with id:", this.socket.id);
+      console.log("✅ WebSocket đã kết nối:", this.socket.id);
+    });
+    this.socket.on("disconnect", () => {
+      console.log("❌ WebSocket bị mất kết nối!");
     });
 
     // Gửi userId lên server khi kết nối
@@ -53,13 +55,13 @@ export default {
 
     // Nhận tin nhắn theo thời gian thực
     this.socket.on("receiveMessage", (msg) => {
-      // Kiểm tra tin nhắn hợp lệ (sender và receiver đúng) và tránh tin nhắn trùng
+      console.log("Nhận tin nhắn qua socket:", msg);
       if (
         (msg.sender === this.receiver && msg.receiver === this.userId) ||
         (msg.sender === this.userId && msg.receiver === this.receiver)
       ) {
         // Tránh việc nhận tin nhắn trùng lặp
-        const messageExists = this.messages.some(m => m._id === msg._id);
+        const messageExists = this.messages.some((m) => m._id === msg._id);
         if (!messageExists) {
           this.messages.push(msg); // Thêm tin nhắn vào danh sách
           this.$nextTick(this.scrollToBottom); // Cuộn đến cuối khi nhận tin nhắn mới
@@ -85,6 +87,7 @@ export default {
           `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
         );
         this.messages = res.data;
+        console.log("Tải tin nhắn cũ:", this.messages); // In ra tin nhắn cũ tải về
         this.$nextTick(() => {
           this.scrollToBottom(); // Cuộn đến cuối khi tải tin nhắn
         });
@@ -107,11 +110,18 @@ export default {
 
       try {
         // Gửi tin nhắn vào backend (Lưu vào database)
-        const response = await axios.post(`${this.backendUrl}/messages`, newMsg);
+        const response = await axios.post(
+          `${this.backendUrl}/messages`,
+          newMsg
+        );
         newMsg._id = response.data._id; // Gán _id trả về từ backend
+
+        // In ra tin nhắn gửi đi
+        console.log("Gửi tin nhắn:", newMsg);
 
         // Gửi tin nhắn qua socket cho người nhận
         this.socket.emit("sendMessage", newMsg);
+        console.log("Đã gửi tin nhắn qua socket:", newMsg);
 
         // Thêm tin nhắn vào danh sách và làm trống ô nhập
         this.messages.push(newMsg);
