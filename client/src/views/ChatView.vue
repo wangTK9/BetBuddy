@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       receiver: "",
+      messages: [], // Lưu trữ tin nhắn đã gửi
     };
   },
   computed: {
@@ -42,8 +43,19 @@ export default {
   },
   methods: {
     handleSendMessage({ sender, receiver, message }) {
+      // Kiểm tra xem tin nhắn đã gửi trước đó chưa
+      const messageExists = this.messages.some((msg) => msg.message === message && msg.receiver === receiver);
+      
+      if (messageExists) {
+        console.log("Tin nhắn đã gửi trước đó, không gửi lại.");
+        return; // Nếu đã gửi tin nhắn này rồi, không gửi lại
+      }
+
       // Gửi tin nhắn qua Socket.io
       this.$socket.emit("sendMessage", { sender, receiver, message });
+
+      // Thêm tin nhắn vào danh sách đã gửi
+      this.messages.push({ sender, receiver, message });
     },
   },
 };

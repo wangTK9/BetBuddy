@@ -62,9 +62,17 @@ io.on("connection", (socket) => {
   // Nhận tin nhắn từ client
   socket.on("sendMessage", async ({ sender, receiver, message }) => {
     try {
+      // Kiểm tra nếu tin nhắn giống hệt đã có trong DB
+      const existingMessage = await Message.findOne({ sender, receiver, message }).exec();
+  
+      if (existingMessage) {
+        console.log("❌ Tin nhắn này đã tồn tại trong DB.");
+        return; // Không gửi lại tin nhắn nếu đã tồn tại
+      }
+  
       const newMessage = new Message({ sender, receiver, message });
       await newMessage.save();
-
+  
       const savedMessage = {
         _id: newMessage._id,
         sender,
@@ -72,9 +80,9 @@ io.on("connection", (socket) => {
         message,
         timestamp: newMessage.createdAt,
       };
-
+  
       const receiverSocketId = users[receiver];
-
+  
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", savedMessage);
       } else {
@@ -84,6 +92,7 @@ io.on("connection", (socket) => {
       console.error("❌ Error saving message:", error);
     }
   });
+  
 
   // Xử lý ngắt kết nối
   socket.on("disconnect", () => {
