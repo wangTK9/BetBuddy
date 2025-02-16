@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="leap-login-container">
     <button @click="connectWallet">
       {{ authStore.isAuthenticated ? "Connected" : "Login with Leap Wallet" }}
     </button>
@@ -51,24 +51,39 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.container {
-  text-align: center;
-  margin-top: 50px;
+.leap-login-container {
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
+
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #6ad99c;
-  cursor: pointer;
-  transition: 0.3s;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #34b7f1; /* Màu xanh dương đặc trưng cho Leap Wallet */
+  color: white;
   font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
+
 button:hover {
-  background: #5ac089;
+  background-color: #2898c4; /* Màu xanh đậm khi hover */
+  transform: translateY(-2px);
 }
+
+button:active {
+  background-color: #2898c4; /* Màu xanh đậm khi click */
+  transform: translateY(0);
+}
+
 </style>
