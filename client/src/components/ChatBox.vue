@@ -1,119 +1,68 @@
 <template>
   <div class="chat-container">
-    <div class="chat-header">
-      <h2>Chat với {{ receiver }}</h2>
+    <div v-for="msg in messages" :key="msg._id" class="message">
+      <span :class="{ 'my-message': msg.sender === userId }">
+        {{ msg.message }}
+      </span>
     </div>
-
-    <div class="chat-messages" ref="chatMessages">
-      <div
-        v-for="msg in messages"
-        :key="msg._id"
-        :class="msg.sender === userId ? 'sent' : 'received'"
-      >
-        <p>{{ msg.message }}</p>
-      </div>
-    </div>
-
-    <div class="chat-input">
-      <input
-        v-model="message"
-        placeholder="Nhập tin nhắn..."
-        @keyup.enter="sendMessage"
-      />
-      <button @click="sendMessage" :disabled="isSending">Gửi</button>
-    </div>
+    <input
+      v-model="newMessage"
+      @keyup.enter="sendMessage"
+      placeholder="Nhập tin nhắn..."
+    />
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
 import { io } from "socket.io-client";
 import axios from "axios";
 
 export default {
-  props: ["userId", "receiver"],
-  data() {
-    return {
-      message: "",
-      messages: [],
-      socket: null,
-      backendUrl: "http://localhost:5000", // Cập nhật URL của backend
-      isSending: false,
-    };
-  },
-  async created() {
-  this.socket = io(this.backendUrl);
+  setup() {
+    const socket = io("http://localhost:5000");
+    const messages = ref([]);
+    const newMessage = ref("");
+    const userId = ref("user1"); // Thay bằng ID thật
+    const receiver = ref("user2"); // Thay bằng ID người nhận
 
-  // Xác nhận kết nối thành công với server WebSocket
-  this.socket.on("connect", () => {
-    console.log("Connected to socket server with id:", this.socket.id);
-  });
+    // Tham gia phòng chat
+    onMounted(async () => {
+      socket.emit("join", userId.value);
+      const res = await axios.get(
+        `http://localhost:5000/messages/${userId.value}/${receiver.value}`
+      );
+      messages.value = res.data;
+    });
 
-  // Gửi userId lên server khi kết nối
-  this.socket.emit("join", this.userId);
-
-  // Nhận tin nhắn theo thời gian thực
-  this.socket.on("receiveMessage", (msg) => {
-    // Kiểm tra tin nhắn hợp lệ (sender và receiver đúng)
-    if (
-      (msg.sender === this.receiver && msg.receiver === this.userId) ||
-      (msg.sender === this.userId && msg.receiver === this.receiver)
-    ) {
-      // Tránh việc nhận tin nhắn trùng lặp
-      if (!this.messages.find(m => m._id === msg._id)) {
-        this.messages.push(msg); // Thêm tin nhắn vào danh sách
-        this.$nextTick(this.scrollToBottom); // Cuộn đến cuối khi nhận tin nhắn mới
+    // Lắng nghe tin nhắn mới từ server
+    socket.on("receiveMessage", (msg) => {
+      if (
+        (msg.sender === receiver.value && msg.receiver === userId.value) ||
+        (msg.sender === userId.value && msg.receiver === receiver.value)
+      ) {
+        if (!messages.value.some((m) => m._id === msg._id)) {
+          messages.value.push(msg);
+        }
       }
-    }
-  });
+    });
 
-  // Tải các tin nhắn cũ
-  await this.loadMessages();
-},
+    // Gửi tin nhắn
+    const sendMessage = () => {
+      if (newMessage.value.trim() === "") return;
 
-    methods: {
-    async loadMessages() {
-      try {
-        const res = await axios.get(
-          `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
-        );
-        this.messages = res.data;
-        this.$nextTick(() => {
-          this.scrollToBottom(); // Cuộn đến cuối khi tải tin nhắn
-        });
-      } catch (error) {
-        console.error("Lỗi tải tin nhắn:", error);
-      }
-    },
-    async sendMessage() {
-      if (!this.message.trim() || this.isSending) return;
-
-      this.isSending = true; // Đánh dấu là đang gửi tin nhắn
-
-      const newMsg = {
-        sender: this.userId,
-        receiver: this.receiver,
-        message: this.message.trim(),
+      const messageData = {
+        sender: userId.value,
+        receiver: receiver.value,
+        message: newMessage.value,
       };
 
-      try {
-        // Gửi tin nhắn vào backend (Lưu vào database)
-        await axios.post(`${this.backendUrl}/messages`, newMsg);
+      socket.emit("sendMessage", messageData);
+      messages.value.push({ ...messageData, _id: Date.now() }); // Hiển thị ngay trên giao diện
+      newMessage.value = "";
+    };
 
-        // Gửi tin nhắn qua socket cho người nhận
-        this.socket.emit("sendMessage", newMsg);
-
-        // Thêm tin nhắn vào danh sách và làm trống ô nhập
-        this.messages.push(newMsg);
-        this.message = ""; // Reset input
-        this.$nextTick(() => {
-          this.scrollToBottom(); // Cuộn xuống cuối khi gửi tin nhắn
-        });
-      } catch (error) {
-        console.error("Lỗi gửi tin nhắn:", error);
-      } finally {
-        this.isSending = false; // Đánh dấu là đã gửi xong
-      }
-    },
+    return { messages, newMessage, sendMessage };
   },
 };
 </script>
@@ -122,59 +71,15 @@ export default {
 .chat-container {
   width: 300px;
   height: 400px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-header {
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.chat-messages {
-  flex-grow: 1;
   overflow-y: auto;
+  border: 1px solid #ccc;
   padding: 10px;
-  border-bottom: 1px solid #ddd;
 }
-
-.sent {
-  text-align: right;
+.message {
+  margin: 5px 0;
+}
+.my-message {
+  font-weight: bold;
   color: blue;
-}
-
-.received {
-  text-align: left;
-  color: green;
-}
-
-.chat-input {
-  display: flex;
-  gap: 5px;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.chat-input button {
-  padding: 5px;
-  border: 1px solid #ddd;
-  background-color: #0071c2;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.chat-input button:hover {
-  background-color: #005a99;
 }
 </style>
