@@ -1,5 +1,5 @@
 const express = require("express");
-const http = require("http"); // Thêm module HTTP
+const http = require("http"); // Module HTTP
 const { Server } = require("socket.io"); // Import socket.io
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -8,15 +8,20 @@ const bodyParser = require("body-parser");
 
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
-const Message = require("./models/Message"); // Import model Message
+const pollRoutes = require("./routes/pollRoutes"); // ✅ Sửa lỗi chính tả
+
+const Message = require("./models/Message");
+const Poll = require("./models/Poll");
 
 mongoose.set("strictQuery", false);
 dotenv.config();
+
 const app = express();
 const server = http.createServer(app); // Tạo server HTTP
+
 const io = new Server(server, {
   cors: {
-    origin: "*", // Cho phép frontend kết nối
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -45,7 +50,8 @@ mongoose
 
 // API Routes
 app.use("/api/user", userRoutes);
-app.use("/messages", messageRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/poll", pollRoutes);
 
 const users = {}; // Lưu danh sách người dùng đang online (userId -> socketId)
 

@@ -100,10 +100,7 @@ export default {
       };
 
       try {
-        const response = await axios.post(
-          `${this.backendUrl}/messages`,
-          newMsg
-        );
+        const response = await axios.post(`${this.backendUrl}/messages`, newMsg);
         newMsg._id = response.data._id;
         console.log("📤 Gửi tin nhắn:", newMsg);
 
