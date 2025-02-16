@@ -16,9 +16,13 @@
     />
 
     <!-- Hiển thị user tìm thấy -->
-    <div v-if="searchedUser" class="searched-user">
+    <div
+      v-if="searchedUser"
+      class="searched-user"
+      @click="selectUser(searchedUser)"
+    >
       <img
-        :src="'/public/avatar-trang-4.jpg'"
+        :src="'/avatar-trang-4.jpg'"
         :alt="searchedUser.fullName"
         class="searched-user-avatar"
       />
@@ -52,8 +56,10 @@
 
 <script>
 import axios from "axios";
+import { useAuthStore } from "../stores/auth";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   data() {
     return {
       searchQuery: "",
@@ -117,8 +123,18 @@ export default {
       // Save to local storage
       localStorage.setItem("recentChats", JSON.stringify(this.chats));
     },
+    selectUser(user) {
+      const authStore = useAuthStore();
+      authStore.setSelectedUserWalletAddress(user.walletAddress);
+      console.log(
+        "Selected User Wallet Address:",
+        authStore.selectedUserWalletAddress
+      ); // Debug log
+      console.log("My Wallet Address:", authStore.walletAddress); // Debug log
+      this.$emit("user-selected", user);
+    },
   },
-};
+});
 </script>
 
 <style scoped>
@@ -158,6 +174,7 @@ export default {
   margin-bottom: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .searched-user-avatar {

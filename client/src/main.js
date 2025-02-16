@@ -6,7 +6,7 @@ import App from "./App.vue";
 import Home from "./views/Home.vue";
 import Account from "./views/Account.vue";
 import Login from "./views/Login.vue";
-import Chat from "./views/Chat.vue";
+import Chat from "./views/ChatView.vue";
 
 // Import Vue Socket.IO
 import { io } from "socket.io-client";

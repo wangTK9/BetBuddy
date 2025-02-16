@@ -6,9 +6,9 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 
-const chatRoutes = require("./routes/chatRoutes");
+// const chatRoutes = require("./routes/chatRoutes");
 const userRoutes = require("./routes/userRoutes");
-const Chat = require("./models/ChatMessage"); // Import model Chat để lưu tin nhắn
+const messageRoutes = require("./routes/messageRoutes");
 
 mongoose.set("strictQuery", false);
 dotenv.config();
@@ -45,7 +45,8 @@ mongoose
 
 // API Routes
 app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes);
+// app.use("/api/chat", chatRoutes);
+app.use("/messages", messageRoutes);
 
 // 🔥 **Xử lý Socket.io để chat theo thời gian thực**
 io.on("connection", (socket) => {
