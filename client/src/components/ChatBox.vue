@@ -45,9 +45,6 @@ export default {
 
     this.socket.on("connect", () => {
       console.log("✅ WebSocket đã kết nối:", this.socket.id);
-      if (this.userId) {
-        this.socket.emit("join", this.userId); // Gửi userId lên server ngay khi kết nối
-      }
     });
 
     this.socket.on("disconnect", () => {
