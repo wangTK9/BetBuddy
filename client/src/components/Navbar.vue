@@ -88,7 +88,6 @@
     </div>
 
     <div class="data-tab-engine">
-      
       <div v-if="activeIcon === 'bell'">
         <UserProfile />
       </div>
@@ -105,7 +104,12 @@
     </div>
     <!-- không được thay đổi phần này -->
     <div class="chat-place">
-      <h2>hiển thị chat ở đây</h2>
+      <ChatBox
+        v-if="selectedChatUser"
+        :userId="userId"
+        :receiver="selectedChatUser.fullName"
+      />
+      <h2 v-else>hiển thị chat ở đây</h2>
     </div>
   </div>
 </template>

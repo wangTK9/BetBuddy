@@ -40,7 +40,12 @@
     <!-- Recent Chats -->
     <h3>Recent</h3>
     <div class="chat-list">
-      <div class="chat-item" v-for="chat in filteredChats" :key="chat.name">
+      <div
+        class="chat-item"
+        v-for="chat in filteredChats"
+        :key="chat.name"
+        @click="selectUser(chat)"
+      >
         <div class="chat-avatar" :style="{ backgroundColor: chat.color }">
           {{ chat.initial }}
         </div>
