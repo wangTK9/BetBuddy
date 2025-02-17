@@ -5,9 +5,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-
+const chatRoutes = require("./routes/chatRoutes.js");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const betRoutes = require("./routes/betRoutes");
+
 const Message = require("./models/Message");
 
 dotenv.config();
@@ -34,6 +36,8 @@ mongoose
 
 app.use("/api/user", userRoutes);
 app.use("/messages", messageRoutes);
+app.use("/api", betRoutes);
+app.use("/api/chat", chatRoutes);
 
 io.on("connection", (socket) => {
   console.log(`⚡️ Client connected: ${socket.id}`);

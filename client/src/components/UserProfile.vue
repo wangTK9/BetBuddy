@@ -1,5 +1,5 @@
 <template>
-<div class="content_main_header_profile">
+  <div class="content_main_header_profile">
     <div class="container_profile-user">
       <div class="account-container">
         <div v-if="user" class="account-card">
@@ -24,7 +24,10 @@
                 class="profile-avatar"
               />
               <p class="user-name">{{ user.fullName || "Chưa cập nhật" }}</p>
-              <div class="status-dot" :class="{ online: user.isOnline, offline: !user.isOnline }"></div>
+              <div
+                class="status-dot"
+                :class="{ online: user.isOnline, offline: !user.isOnline }"
+              ></div>
             </div>
           </div>
 
@@ -36,23 +39,39 @@
 
           <!-- Dropdown About -->
           <div class="parent-container">
-            <button class="dropdown-btn flex items-center justify-between w-full px-4 py-2 border rounded-lg" @click="toggleAbout">
+            <button
+              class="dropdown-btn flex items-center justify-between w-full px-4 py-2 border rounded-lg"
+              @click="toggleAbout"
+            >
               <div class="flex items-center">
                 <i class="fas fa-user mr-2"></i> About
               </div>
-              <i :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+              <i
+                :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
+              ></i>
             </button>
           </div>
           <transition name="slide">
             <div v-if="showAbout" class="dropdown-content">
               <div class="account-info">
-                <p>Họ và tên: <br> <strong>{{ user.fullName || "Chưa cập nhật" }} </strong> </p>
-                <p>Ngày sinh: <br> <strong>  {{ user.birthDate || "Chưa cập nhật" }} </strong> </p>
-                <p>Email: <br> <strong>  {{ user.email || "Chưa cập nhật" }} </strong> </p>
+                <p>
+                  Họ và tên: <br />
+                  <strong>{{ user.fullName || "Chưa cập nhật" }} </strong>
+                </p>
+                <p>
+                  Ngày sinh: <br />
+                  <strong> {{ user.birthDate || "Chưa cập nhật" }} </strong>
+                </p>
+                <p>
+                  Email: <br />
+                  <strong> {{ user.email || "Chưa cập nhật" }} </strong>
+                </p>
 
                 <p v-if="showWallet">
                   <strong>Wallet Address:</strong>
-                  <span class="wallet">{{ user.walletAddress || "Chưa cập nhật" }}</span>
+                  <span class="wallet">{{
+                    user.walletAddress || "Chưa cập nhật"
+                  }}</span>
                 </p>
 
                 <button @click="toggleWalletVisibility">
@@ -68,38 +87,42 @@
 
   <!-- Form Edit - Hiển thị ở giữa màn hình -->
   <div v-if="isEditing" class="modal">
-  <div class="modal-content">
-    <h3>Chỉnh sửa thông tin</h3>
+    <div class="modal-content">
+      <h3>Chỉnh sửa thông tin</h3>
 
-    <div class="input-group">
-      <label>Họ và tên:</label>
-      <input placeholder="Họ và tên" v-model="editUser.fullName" type="text" />
-      <span v-if="validationErrors.fullName" class="error-icon">!</span>
-    </div>
+      <div class="input-group">
+        <label>Họ và tên:</label>
+        <input
+          placeholder="Họ và tên"
+          v-model="editUser.fullName"
+          type="text"
+        />
+        <span v-if="validationErrors.fullName" class="error-icon">!</span>
+      </div>
 
-    <div class="input-group">
-      <label>Ngày sinh:</label>
-      <input placeholder="Date" v-model="editUser.birthDate" type="date" />
-      <span v-if="validationErrors.birthDate" class="error-icon">!</span>
-    </div>
+      <div class="input-group">
+        <label>Ngày sinh:</label>
+        <input placeholder="Date" v-model="editUser.birthDate" type="date" />
+        <span v-if="validationErrors.birthDate" class="error-icon">!</span>
+      </div>
 
-    <div class="input-group">
-      <label>Email:</label>
-      <input placeholder="Email" v-model="editUser.email" type="email" />
-      <span v-if="validationErrors.email" class="error-icon">!</span>
-    </div>
+      <div class="input-group">
+        <label>Email:</label>
+        <input placeholder="Email" v-model="editUser.email" type="email" />
+        <span v-if="validationErrors.email" class="error-icon">!</span>
+      </div>
 
-    <div class="input-group">
-      <label>Bio:</label>
-      <input placeholder="Bio" v-model="editUser.bio" type="text" />
-      <span v-if="validationErrors.bio" class="error-icon">!</span>
-    </div>
+      <div class="input-group">
+        <label>Bio:</label>
+        <input placeholder="Bio" v-model="editUser.bio" type="text" />
+        <span v-if="validationErrors.bio" class="error-icon">!</span>
+      </div>
 
-    <div class="btn-group">
-      <button class="save-btn" @click="updateUser">Lưu</button>
-      <button class="cancel-btn" @click="toggleEdit">Hủy</button>
+      <div class="btn-group">
+        <button class="save-btn" @click="updateUser">Lưu</button>
+        <button class="cancel-btn" @click="toggleEdit">Hủy</button>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -107,7 +130,7 @@
 import { ref, computed, watch } from "vue";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
-import '@fortawesome/fontawesome-free/css/all.css';
+import "@fortawesome/fontawesome-free/css/all.css";
 
 const authStore = useAuthStore();
 const walletAddress = computed(() => authStore.walletAddress);
@@ -123,7 +146,9 @@ const fetchUser = async () => {
   if (!walletAddress.value) return;
   try {
     const response = await axios.get("http://localhost:5000/api/user/users");
-    user.value = response.data.find((u) => u.walletAddress === walletAddress.value) || null;
+    user.value =
+      response.data.find((u) => u.walletAddress === walletAddress.value) ||
+      null;
   } catch (error) {
     console.error("Lỗi khi tải dữ liệu:", error);
   }
@@ -182,12 +207,10 @@ const updateUser = async () => {
 };
 </script>
 
-
 <style scoped>
-.data-tab-engine{
-
+.data-tab-engine {
 }
-.content_main_header_profile{
+.content_main_header_profile {
   position: relative;
   max-width: 450px;
 }
@@ -474,7 +497,7 @@ button:focus {
 .dropdown-btn {
   margin: 10px 0;
   padding: 8px 12px;
-  background-color: #F5F7FB;
+  background-color: #f5f7fb;
   color: white;
   border: none;
   cursor: pointer;
@@ -544,7 +567,7 @@ button:focus {
 
 .dropdown-btn i {
   font-size: 16px;
-  color:#7b7b7bc5;
+  color: #7b7b7bc5;
 }
 .dropdown-content {
   width: 100%;
@@ -609,7 +632,6 @@ button:focus {
   text-align: left;
   margin-top: 10px;
 }
-
 
 /* Nhóm nút */
 .btn-group {
@@ -743,7 +765,7 @@ button:focus {
 .cancel-btn:hover {
   background-color: #a71d2a;
 }
-.error{
+.error {
   color: red;
   height: 5px;
   font-size: 15px;

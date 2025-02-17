@@ -1,13 +1,13 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Chat với {{ receiver }}</h2>
+      <h2>Chat với {{ receiver || "Không xác định" }}</h2>
     </div>
 
     <div class="chat-messages" ref="chatMessages">
       <div
         v-for="msg in messages"
-        :key="msg._id"
+        :key="msg.id"
         :class="msg.sender === userId ? 'sent' : 'received'"
       >
         <p>{{ msg.message }}</p>
@@ -26,155 +26,165 @@
 </template>
 
 <script>
-import { io } from "socket.io-client";
-import axios from "axios";
+import { database } from "@/services/firebaseConfig.js";
+import { ref, push, set, onValue } from "firebase/database";
+import { useAuthStore } from "@/stores/auth";
 
 export default {
-  props: ["userId", "receiver"],
+  props: ["receiver"], // Nhận thông tin người nhận từ component cha
   data() {
     return {
       message: "",
       messages: [],
-      socket: null,
-      backendUrl: "http://localhost:5000",
       isSending: false,
     };
   },
-  async created() {
-    this.socket = io(this.backendUrl);
-
-    this.socket.on("connect", () => {
-      console.log("✅ WebSocket đã kết nối:", this.socket.id);
-    });
-
-    this.socket.on("disconnect", () => {
-      console.log("❌ WebSocket bị mất kết nối!");
-    });
-
-    this.socket.on("receiveMessage", (msg) => {
-      console.log("Nhận tin nhắn qua socket:", msg);
-      const messageExists = this.messages.some((m) => m._id === msg._id);
-      if (!messageExists) {
-        this.messages = [...this.messages, msg];
-        this.$nextTick(this.scrollToBottom);
+  computed: {
+    userId() {
+      const authStore = useAuthStore();
+      console.log("🔍 User ID:", authStore.walletAddress); // Kiểm tra User ID
+      return authStore.walletAddress || null;
+    },
+    chatRoomId() {
+      if (!this.userId || !this.receiver) {
+        console.warn("⚠️ chatRoomId không hợp lệ:", this.userId, this.receiver);
+        return null;
       }
-    });
-
-    await this.loadMessages();
+      const roomId = [this.userId, this.receiver].sort().join("_");
+      console.log("📌 Chat Room ID:", roomId);
+      return roomId;
+    },
   },
-
+  watch: {
+    chatRoomId: {
+      handler(newChatRoomId) {
+        if (newChatRoomId) this.loadMessages();
+      },
+      immediate: true,
+    },
+  },
   methods: {
+    // 📥 Tải tin nhắn từ Firebase
+    loadMessages() {
+      if (!this.chatRoomId) return;
+      console.log(`📥 Đang tải tin nhắn từ chatRoomId: ${this.chatRoomId}`);
+
+      const messagesRef = ref(database, `chats/${this.chatRoomId}`);
+      onValue(messagesRef, (snapshot) => {
+        console.log("🔄 Firebase trả về snapshot:", snapshot.val());
+        if (snapshot.exists()) {
+          this.messages = Object.values(snapshot.val());
+          console.log("✅ Tin nhắn đã tải:", this.messages);
+        } else {
+          this.messages = [];
+          console.log("⚠️ Không có tin nhắn nào.");
+        }
+        this.$nextTick(this.scrollToBottom);
+      });
+    },
+
+    // 🚀 Gửi tin nhắn lên Firebase
+    async sendMessage() {
+      if (!this.message.trim() || !this.chatRoomId) {
+        console.warn("⚠️ Tin nhắn rỗng hoặc chatRoomId không hợp lệ.");
+        return;
+      }
+
+      console.log("🚀 Đang gửi tin nhắn...");
+
+      this.isSending = true;
+      try {
+        const messagesRef = ref(database, `chats/${this.chatRoomId}`);
+        const newMessageRef = push(messagesRef);
+
+        const newMessage = {
+          id: newMessageRef.key,
+          sender: this.userId,
+          receiver: this.receiver,
+          message: this.message.trim(),
+          timestamp: Date.now(),
+        };
+
+        await set(newMessageRef, newMessage);
+        console.log("✅ Tin nhắn đã gửi thành công:", newMessage);
+
+        this.message = "";
+        this.$nextTick(this.scrollToBottom);
+      } catch (error) {
+        console.error("❌ Lỗi gửi tin nhắn:", error.message, error);
+      } finally {
+        this.isSending = false;
+      }
+    },
+
+    // 📜 Cuộn xuống cuối danh sách tin nhắn
     scrollToBottom() {
       this.$nextTick(() => {
         const chatMessages = this.$refs.chatMessages;
         if (chatMessages) {
           chatMessages.scrollTop = chatMessages.scrollHeight;
+          console.log("📜 Đã cuộn xuống cuối tin nhắn.");
         }
       });
-    },
-
-    async loadMessages() {
-      try {
-        const res = await axios.get(
-          `${this.backendUrl}/messages/${this.userId}/${this.receiver}`
-        );
-        this.messages = res.data;
-        console.log("📜 Tin nhắn đã tải:", this.messages);
-        this.$nextTick(this.scrollToBottom);
-      } catch (error) {
-        console.error("Lỗi tải tin nhắn:", error);
-      }
-    },
-
-    async sendMessage() {
-      if (!this.message.trim() || this.isSending) return;
-      this.isSending = true;
-
-      const newMsg = {
-        sender: this.userId,
-        receiver: this.receiver,
-        message: this.message.trim(),
-      };
-
-      try {
-        const response = await axios.post(
-          `${this.backendUrl}/messages`,
-          newMsg
-        );
-        newMsg._id = response.data._id;
-        console.log("📤 Gửi tin nhắn:", newMsg);
-
-        this.socket.emit("sendMessage", newMsg);
-        this.messages = [...this.messages, newMsg];
-        this.message = "";
-        this.$nextTick(this.scrollToBottom);
-      } catch (error) {
-        console.error("❌ Lỗi gửi tin nhắn:", error);
-      } finally {
-        this.isSending = false;
-      }
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .chat-container {
-  width: 300px;
-  height: 400px;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.chat-header {
+  background: #007bff;
+  color: white;
   padding: 10px;
-  background: #fff;
+  text-align: center;
+}
+.chat-messages {
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
   display: flex;
   flex-direction: column;
 }
-
-.chat-header {
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.chat-messages {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
 .sent {
-  text-align: right;
-  color: blue;
+  align-self: flex-end;
+  background: #dcf8c6;
+  padding: 8px;
+  border-radius: 10px;
+  margin: 5px;
 }
-
 .received {
-  text-align: left;
-  color: green;
+  align-self: flex-start;
+  background: #f1f0f0;
+  padding: 8px;
+  border-radius: 10px;
+  margin: 5px;
 }
-
 .chat-input {
   display: flex;
-  gap: 5px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
 }
-
 .chat-input input {
   flex: 1;
-  padding: 5px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
-
 .chat-input button {
-  padding: 5px;
-  border: 1px solid #ddd;
-  background-color: #0071c2;
+  margin-left: 5px;
+  padding: 8px 15px;
+  border: none;
+  background: #007bff;
   color: white;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.chat-input button:hover {
-  background-color: #005a99;
 }
 </style>
