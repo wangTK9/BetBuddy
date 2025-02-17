@@ -4,7 +4,12 @@
     <label>Người nhận: </label>
     <input v-model="receiver" placeholder="Nhập ID người nhận" />
 
-    <ChatBox v-if="receiver" :userId="userId" :receiver="receiver" />
+    <ChatBox
+      v-if="receiver"
+      :userId="userId"
+      :receiver="receiver"
+      @sendMessage="handleSendMessage"
+    />
   </div>
 </template>
 
@@ -17,6 +22,7 @@ export default {
   data() {
     return {
       receiver: "",
+      messages: [], // Lưu trữ tin nhắn đã gửi
     };
   },
   computed: {
@@ -33,6 +39,23 @@ export default {
       handler(newReceiver) {
         this.receiver = newReceiver;
       },
+    },
+  },
+  methods: {
+    handleSendMessage({ sender, receiver, message }) {
+      // Kiểm tra xem tin nhắn đã gửi trước đó chưa
+      const messageExists = this.messages.some((msg) => msg.message === message && msg.receiver === receiver);
+      
+      if (messageExists) {
+        console.log("Tin nhắn đã gửi trước đó, không gửi lại.");
+        return; // Nếu đã gửi tin nhắn này rồi, không gửi lại
+      }
+
+      // Gửi tin nhắn qua Socket.io
+      this.$socket.emit("sendMessage", { sender, receiver, message });
+
+      // Thêm tin nhắn vào danh sách đã gửi
+      this.messages.push({ sender, receiver, message });
     },
   },
 };

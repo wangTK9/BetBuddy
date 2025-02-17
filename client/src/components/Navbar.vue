@@ -226,7 +226,7 @@ body {
 }
 
   .data-sidebar {
-    width: 100%; /* Đặt độ rộng của sidebar */
+    width: 100%; 
     background-color: white;
     border-right: 1px solid #e2e8f0;
     display: flex;

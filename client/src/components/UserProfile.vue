@@ -1,5 +1,5 @@
 <template>
-  <div class="content_main_header_profile">
+<div class="content_main_header_profile">
     <div class="container_profile-user">
       <div class="account-container">
         <div v-if="user" class="account-card">
