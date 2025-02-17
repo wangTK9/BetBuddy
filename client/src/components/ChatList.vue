@@ -228,6 +228,9 @@ export default defineComponent({
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 70vh;
+  overflow-y: scroll; /* Cho phép cuộn theo chiều dọc */
+  overflow-x: hidden; /* Tắt cuộn theo chiều ngang */
 }
 
 .chat-item {

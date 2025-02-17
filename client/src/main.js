@@ -12,7 +12,7 @@ import Home from "./views/Home.vue";
 // import Support from "./views/Support.vue";
 import Account from "./views/Account.vue";
 import Login from "./views/Login.vue";
-import Chat from "./views/ChatView.vue";
+// import Chat from "./views/ChatView.vue";
 import Poll from "./views/Poll.vue";
 import Bet from "./views/Bet.vue";
 
@@ -48,7 +48,7 @@ const router = createRouter({
     { path: "/account", component: Account },
     { path: "/", component: Login },
     { path: "/login", component: Login },
-    { path: "/chat", component: Chat },
+    // { path: "/chat", component: Chat },
     { path: "/poll", component: Poll },
     { path: "/bet", component: Bet },
   ],

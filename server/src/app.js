@@ -9,9 +9,9 @@ const chatRoutes = require("./routes/chatRoutes.js");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const betRoutes = require("./routes/betRoutes");
-
+const pollRoutes = require("./routes/pollRoutes"); // ✅ Sửa lỗi chính tả
 const Message = require("./models/Message");
-
+const Poll = require("./models/Poll");
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -38,7 +38,7 @@ app.use("/api/user", userRoutes);
 app.use("/messages", messageRoutes);
 app.use("/api", betRoutes);
 app.use("/api/chat", chatRoutes);
-
+app.use("/api/poll", pollRoutes);
 io.on("connection", (socket) => {
   console.log(`⚡️ Client connected: ${socket.id}`);
 

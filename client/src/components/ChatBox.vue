@@ -1,7 +1,7 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Chat với {{ receiver || "Không xác định" }}</h2>
+      <h2>Chat với {{ receiver.name || "Không xác định" }}</h2>
     </div>
 
     <div class="chat-messages" ref="chatMessages">
@@ -20,7 +20,16 @@
         placeholder="Nhập tin nhắn..."
         @keyup.enter="sendMessage"
       />
+      <button @click="togglePollPopup">+</button>
       <button @click="sendMessage" :disabled="isSending">Gửi</button>
+    </div>
+
+    <!-- Popup cho chức năng Poll -->
+    <div v-if="showPollPopup" class="poll-popup">
+      <div class="popup-content">
+        <span class="close" @click="togglePollPopup">x</span>
+        <Poll />
+      </div>
     </div>
   </div>
 </template>
@@ -29,29 +38,30 @@
 import { database } from "@/services/firebaseConfig.js";
 import { ref, push, set, onValue } from "firebase/database";
 import { useAuthStore } from "@/stores/auth";
+import Poll from "../components/Poll.vue";
 
 export default {
-  props: ["receiver"], // Nhận thông tin người nhận từ component cha
+  components: { Poll },
+
+  props: ["receiver"],
   data() {
     return {
       message: "",
       messages: [],
       isSending: false,
+      showPollPopup: false, // Thêm biến để điều khiển trạng thái popup
     };
   },
   computed: {
     userId() {
       const authStore = useAuthStore();
-      console.log("🔍 User ID:", authStore.walletAddress); // Kiểm tra User ID
       return authStore.walletAddress || null;
     },
     chatRoomId() {
       if (!this.userId || !this.receiver) {
-        console.warn("⚠️ chatRoomId không hợp lệ:", this.userId, this.receiver);
         return null;
       }
       const roomId = [this.userId, this.receiver].sort().join("_");
-      console.log("📌 Chat Room ID:", roomId);
       return roomId;
     },
   },
@@ -64,33 +74,26 @@ export default {
     },
   },
   methods: {
-    // 📥 Tải tin nhắn từ Firebase
+    togglePollPopup() {
+      this.showPollPopup = !this.showPollPopup; // Thay đổi trạng thái hiển thị popup
+    },
     loadMessages() {
       if (!this.chatRoomId) return;
-      console.log(`📥 Đang tải tin nhắn từ chatRoomId: ${this.chatRoomId}`);
-
       const messagesRef = ref(database, `chats/${this.chatRoomId}`);
       onValue(messagesRef, (snapshot) => {
-        console.log("🔄 Firebase trả về snapshot:", snapshot.val());
         if (snapshot.exists()) {
           this.messages = Object.values(snapshot.val());
-          console.log("✅ Tin nhắn đã tải:", this.messages);
         } else {
           this.messages = [];
-          console.log("⚠️ Không có tin nhắn nào.");
         }
         this.$nextTick(this.scrollToBottom);
       });
     },
 
-    // 🚀 Gửi tin nhắn lên Firebase
     async sendMessage() {
       if (!this.message.trim() || !this.chatRoomId) {
-        console.warn("⚠️ Tin nhắn rỗng hoặc chatRoomId không hợp lệ.");
         return;
       }
-
-      console.log("🚀 Đang gửi tin nhắn...");
 
       this.isSending = true;
       try {
@@ -106,8 +109,6 @@ export default {
         };
 
         await set(newMessageRef, newMessage);
-        console.log("✅ Tin nhắn đã gửi thành công:", newMessage);
-
         this.message = "";
         this.$nextTick(this.scrollToBottom);
       } catch (error) {
@@ -117,13 +118,11 @@ export default {
       }
     },
 
-    // 📜 Cuộn xuống cuối danh sách tin nhắn
     scrollToBottom() {
       this.$nextTick(() => {
         const chatMessages = this.$refs.chatMessages;
         if (chatMessages) {
           chatMessages.scrollTop = chatMessages.scrollHeight;
-          console.log("📜 Đã cuộn xuống cuối tin nhắn.");
         }
       });
     },
@@ -134,11 +133,12 @@ export default {
 <style scoped>
 .chat-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 100%;
   margin: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
+  padding: 20px;
 }
 .chat-header {
   background: #007bff;
@@ -147,7 +147,8 @@ export default {
   text-align: center;
 }
 .chat-messages {
-  height: 300px;
+  height: 530px;
+  width: 100%;
   overflow-y: auto;
   padding: 10px;
   display: flex;
@@ -186,5 +187,34 @@ export default {
   color: white;
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* Popup styles */
+.poll-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+/* .popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+} */
+.close {
+  position: absolute;
+  top: 163px;
+  right: 520px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
 }
 </style>

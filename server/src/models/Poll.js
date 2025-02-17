@@ -1,19 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const pollSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  options: [{
-    text: { type: String, required: true },
-    votes: { type: Number, default: 0 },
-  }],
-  settings: {
-    pinChat: { type: Boolean, default: false },
-    multipleOptions: { type: Boolean, default: true },
-    canAddOptions: { type: Boolean, default: true },
-    anonymous: { type: Boolean, default: false },
-    expirationTime: { type: Date, required: true },
+const PollSchema = new mongoose.Schema(
+  {
+    question: { type: String, required: true },
+    options: [{ text: { type: String, required: true } }],
+    expirationTime: { type: Date, required: false }, // Chỉnh sửa phần này nếu cần
+    settings: {
+      pinChat: { type: Boolean, default: false },
+      multipleOptions: { type: Boolean, default: true },
+      canAddOptions: { type: Boolean, default: true },
+      anonymous: { type: Boolean, default: false },
+    },
   },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const Poll = mongoose.model('Poll', pollSchema);
+const Poll = mongoose.model("Poll", PollSchema);
+
 module.exports = Poll;

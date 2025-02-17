@@ -104,12 +104,7 @@
     </div>
     <!-- không được thay đổi phần này -->
     <div class="chat-place">
-      <ChatBox
-        v-if="selectedChatUser"
-        :userId="userId"
-        :receiver="selectedChatUser.fullName"
-      />
-      <h2 v-else>hiển thị chat ở đây</h2>
+      <ChatView />
     </div>
   </div>
 </template>
@@ -250,7 +245,7 @@ body {
   width: 950px;
   background-color: #f7fafc;
   border-left: 1px solid #e2e8f0;
-  padding: 1rem;
+  /* padding: 1rem; */
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -267,6 +262,9 @@ body {
 </style>
 
 <script>
+import ChatBox from "./ChatBox.vue"; // Import component ChatBox
+import ChatView from "./ChatView.vue"; // Import component ChatBox
+
 import ChatList from "../components/ChatList.vue";
 import UserProfile from "../components/UserProfile.vue";
 
@@ -274,15 +272,26 @@ export default {
   components: {
     ChatList,
     UserProfile,
+    ChatBox,
+    ChatView,
   },
   data() {
     return {
       activeIcon: "", // Lưu trữ công cụ đang được chọn
       isDropdownOpen: false,
       isNightMode: false,
+      selectedChatUser: null, // Lưu thông tin người dùng đã chọn để hiển thị chat
     };
   },
+  computed: {
+    userId() {
+      return useAuthStore().walletAddress; // Lấy ID người dùng từ store
+    },
+  },
   methods: {
+    handleUserSelected(user) {
+      this.selectedChatUser = user; // Lưu thông tin người dùng đã chọn vào selectedChatUser
+    },
     setActiveIcon(icon) {
       // Cập nhật trạng thái của công cụ đang được chọn
       this.activeIcon = icon;
