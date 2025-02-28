@@ -9,8 +9,8 @@
               <span class="menu-icon" @click="toggleMenu">⋮</span>
               <transition name="fade">
                 <div v-if="showMenu" class="dropdown">
-                  <button @click="editProfile">Chỉnh sửa</button>
-                  <button @click="logout">Đăng xuất</button>
+                  <button @click="editProfile">Edit</button>
+                  <button @click="logout">Logout</button>
                 </div>
               </transition>
             </div>
@@ -19,64 +19,64 @@
           <div class="select_main-profile-image">
             <div class="select_main-image-top">
               <img
-                :src="user.profileImage || 'https://i.pravatar.cc/100'"
+                :src="user.profileImage || 'https://i.pinimg.com/736x/9f/e7/9d/9fe79d570909a6c2004f81d36d69db04.jpg'"
                 alt="Avatar"
                 class="profile-avatar"
               />
-              <p class="user-name">{{ user.fullName || "Chưa cập nhật" }}</p>
-              <div
-                class="status-dot"
-                :class="{ online: user.isOnline, offline: !user.isOnline }"
-              ></div>
+              <p class="user-name">{{ user.fullName || "Not updated" }}</p>
             </div>
           </div>
 
           <div class="select_main-profile-bio">
             <p class="content-bio">
-              <strong></strong> {{ user.bio || "Chưa cập nhật" }}
+              <strong></strong> {{ user.bio || "Not updated" }}
             </p>
           </div>
 
           <!-- Dropdown About -->
           <div class="parent-container">
-            <button
-              class="dropdown-btn flex items-center justify-between w-full px-4 py-2 border rounded-lg"
-              @click="toggleAbout"
-            >
-              <div class="flex items-center">
-                <i class="fas fa-user mr-2"></i> About
-              </div>
-              <i
-                :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
-              ></i>
+            <button class="dropdown-btn" @click="toggleAbout">
+              <i class="fas fa-user"></i> About
+              <i :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
             </button>
           </div>
           <transition name="slide">
             <div v-if="showAbout" class="dropdown-content">
               <div class="account-info">
-                <p>
-                  Họ và tên: <br />
-                  <strong>{{ user.fullName || "Chưa cập nhật" }} </strong>
-                </p>
-                <p>
-                  Ngày sinh: <br />
-                  <strong> {{ user.birthDate || "Chưa cập nhật" }} </strong>
-                </p>
-                <p>
-                  Email: <br />
-                  <strong> {{ user.email || "Chưa cập nhật" }} </strong>
+                <p>Name: <strong>{{ user.fullName || "Not updated" }}</strong></p>
+                <p>Date: <strong>{{ user.birthDate || "Not updated" }}</strong></p>
+                <p>Email: <strong>{{ user.email || "Not updated" }}</strong></p>
+
+                <!-- Only show copy button, do not display wallet address -->
+                <p v-if="user.walletAddress">
+                  <button @click="copyWalletAddress" class="copy-btn">
+                    <i class="fas fa-copy"></i> Wallet Address
+                  </button>
                 </p>
 
-                <p v-if="showWallet">
-                  <strong>Wallet Address:</strong>
-                  <span class="wallet">{{
-                    user.walletAddress || "Chưa cập nhật"
-                  }}</span>
-                </p>
+                <!-- Copy notification -->
+                <transition name="fade">
+                  <div v-if="showCopyMessage" class="copy-message">
+                    Copied!
+                  </div>
+                </transition>
+              </div>
+            </div>
+          </transition>
 
-                <button @click="toggleWalletVisibility">
-                  {{ showWallet ? "Ẩn địa chỉ ví" : "Hiển thị địa chỉ ví" }}
-                </button>
+          <!-- Dropdown Token -->
+          <div class="parent-container">
+            <button class="dropdown-btn" @click="toggleToken">
+              <i class="fas fa-coins"></i> Token Balance
+              <i :class="showToken ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+            </button>
+          </div>
+          <transition name="slide">
+            <div v-if="showToken" class="dropdown-content">
+              <div class="account-info">
+                <p>Token Balance: <strong>{{ user.tokenBalance || "0" }} TOKEN</strong></p>
+                <button @click="depositToken" class="token-btn">💰 Deposit Token</button>
+                <button @click="withdrawToken" class="token-btn">💸 Withdraw Token</button>
               </div>
             </div>
           </transition>
@@ -85,127 +85,209 @@
     </div>
   </div>
 
-  <!-- Form Edit - Hiển thị ở giữa màn hình -->
+  <!-- Edit Form -->
   <div v-if="isEditing" class="modal">
     <div class="modal-content">
-      <h3>Chỉnh sửa thông tin</h3>
+      <h3>Edit Information</h3>
 
       <div class="input-group">
-        <label>Họ và tên:</label>
-        <input
-          placeholder="Họ và tên"
-          v-model="editUser.fullName"
-          type="text"
-        />
+        <label>Full Name:</label>
+        <input v-model="editUser.fullName" type="text" placeholder="Full Name" />
         <span v-if="validationErrors.fullName" class="error-icon">!</span>
       </div>
 
       <div class="input-group">
-        <label>Ngày sinh:</label>
-        <input placeholder="Date" v-model="editUser.birthDate" type="date" />
+        <label>Birth Date:</label>
+        <input v-model="editUser.birthDate" type="date" />
         <span v-if="validationErrors.birthDate" class="error-icon">!</span>
       </div>
 
       <div class="input-group">
         <label>Email:</label>
-        <input placeholder="Email" v-model="editUser.email" type="email" />
+        <input v-model="editUser.email" type="email" placeholder="Email" />
         <span v-if="validationErrors.email" class="error-icon">!</span>
       </div>
 
       <div class="input-group">
         <label>Bio:</label>
-        <input placeholder="Bio" v-model="editUser.bio" type="text" />
+        <input v-model="editUser.bio" type="text" placeholder="Bio" />
         <span v-if="validationErrors.bio" class="error-icon">!</span>
       </div>
 
       <div class="btn-group">
-        <button class="save-btn" @click="updateUser">Lưu</button>
-        <button class="cancel-btn" @click="toggleEdit">Hủy</button>
+        <button class="save-btn" @click="updateUser">Save</button>
+        <button class="cancel-btn" @click="toggleEdit">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Token Transaction Form -->
+  <div v-if="isTokenModalOpen" class="modal">
+    <div class="modal-content">
+      <h3>{{ tokenAction === 'deposit' ? 'Deposit Token' : 'Withdraw Token' }}</h3>
+      <div class="input-group">
+        <label>Token Amount:</label>
+        <input v-model="tokenAmount" type="number" placeholder="Enter token amount" />
+      </div>
+      <div v-if="tokenAction === 'withdraw'" class="input-group">
+        <label>Recipient Wallet Address:</label>
+        <input v-model="recipientWallet" type="text" placeholder="Enter wallet address" />
+      </div>
+      <div class="btn-group">
+        <button class="save-btn" @click="confirmTokenAction">Confirm</button>
+        <button class="cancel-btn" @click="closeTokenModal">Cancel</button>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
-import axios from "axios";
-import { useAuthStore } from "../stores/auth";
-import "@fortawesome/fontawesome-free/css/all.css";
 
-const authStore = useAuthStore();
-const walletAddress = computed(() => authStore.walletAddress);
-const user = ref(null);
-const isEditing = ref(false);
-const showMenu = ref(false);
-const showAbout = ref(false);
-const showWallet = ref(false);
-const editUser = ref({ fullName: "", birthDate: "", email: "", bio: "" });
-const validationErrors = ref({});
+  <script setup>
+  import { ref, computed, watch } from "vue";
+  import axios from "axios";
+  import { useAuthStore } from "../stores/auth";
+  import "@fortawesome/fontawesome-free/css/all.css";
 
-const fetchUser = async () => {
-  if (!walletAddress.value) return;
-  try {
-    const response = await axios.get("http://localhost:5000/api/user/users");
-    user.value =
-      response.data.find((u) => u.walletAddress === walletAddress.value) ||
-      null;
-  } catch (error) {
-    console.error("Lỗi khi tải dữ liệu:", error);
-  }
-};
+  const authStore = useAuthStore();
+  const walletAddress = computed(() => authStore.walletAddress);
+  const user = ref(null);
+  const isEditing = ref(false);
+  const showMenu = ref(false);
+  const showAbout = ref(false);
+  const showToken = ref(false);
+  const editUser = ref({ fullName: "", birthDate: "", email: "", bio: "" });
+  const validationErrors = ref({});
+  const showCopyMessage = ref(false);
 
-watch(walletAddress, fetchUser, { immediate: true });
+  // Thêm biến cho modal giao dịch token
+  const isTokenModalOpen = ref(false);
+  const tokenAction = ref(""); // 'deposit' hoặc 'withdraw'
+  const tokenAmount = ref(0);
+  const recipientWallet = ref(""); // Chỉ dùng khi withdraw
 
-const toggleMenu = () => (showMenu.value = !showMenu.value);
-const toggleAbout = () => (showAbout.value = !showAbout.value);
-const toggleWalletVisibility = () => (showWallet.value = !showWallet.value);
+  // Hàm lấy thông tin user
+  const fetchUser = async () => {
+    if (!walletAddress.value) return;
+    try {
+      const response = await axios.get("http://localhost:5000/api/user/users");
+      user.value =
+        response.data.find((u) => u.walletAddress === walletAddress.value) ||
+        null;
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu:", error);
+    }
+  };
 
-const editProfile = () => {
-  showMenu.value = false;
-  toggleEdit();
-};
+  // Theo dõi thay đổi địa chỉ ví và cập nhật thông tin user
+  watch(walletAddress, fetchUser, { immediate: true });
 
-const logout = () => alert("Đã đăng xuất!");
+  // Các hàm toggle hiển thị dropdown
+  const toggleMenu = () => (showMenu.value = !showMenu.value);
+  const toggleAbout = () => (showAbout.value = !showAbout.value);
+  const toggleToken = () => (showToken.value = !showToken.value);
 
-const toggleEdit = () => {
-  isEditing.value = !isEditing.value;
-  editUser.value = { fullName: "", birthDate: "", email: "", bio: "" };
-  validationErrors.value = {}; // Reset lỗi khi mở form
-};
+  // Hàm chỉnh sửa profile
+  const editProfile = () => {
+    showMenu.value = false;
+    toggleEdit();
+  };
 
-const updateUser = async () => {
-  validationErrors.value = {}; // Xóa lỗi trước khi kiểm tra
+  const logout = () => alert("Đã đăng xuất!");
 
-  if (!editUser.value.fullName.trim()) {
-    validationErrors.value.fullName = "Vui lòng nhập họ và tên!";
-  }
-  if (!editUser.value.birthDate) {
-    validationErrors.value.birthDate = "Vui lòng chọn ngày sinh!";
-  }
-  if (!editUser.value.email.trim()) {
-    validationErrors.value.email = "Vui lòng nhập email!";
-  }
-  if (!editUser.value.bio.trim()) {
-    validationErrors.value.bio = "Vui lòng nhập bio!";
-  }
+  const toggleEdit = () => {
+    isEditing.value = !isEditing.value;
+    editUser.value = { fullName: "", birthDate: "", email: "", bio: "" };
+    validationErrors.value = {}; // Reset lỗi khi mở form
+  };
 
-  if (Object.keys(validationErrors.value).length > 0) {
-    return;
-  }
+  const updateUser = async () => {
+    validationErrors.value = {}; // Xóa lỗi trước khi kiểm tra
 
-  try {
-    await axios.put(
-      `http://localhost:5000/api/user/update/${user.value.walletAddress}`,
-      editUser.value,
-      { headers: { "Content-Type": "application/json" } }
-    );
-    fetchUser();
-    isEditing.value = false;
-  } catch (error) {
-    console.error("Lỗi khi cập nhật user:", error);
-  }
-};
-</script>
+    if (!editUser.value.fullName.trim()) validationErrors.value.fullName = "Vui lòng nhập họ và tên!";
+    if (!editUser.value.birthDate) validationErrors.value.birthDate = "Vui lòng chọn ngày sinh!";
+    if (!editUser.value.email.trim()) validationErrors.value.email = "Vui lòng nhập email!";
+    if (!editUser.value.bio.trim()) validationErrors.value.bio = "Vui lòng nhập bio!";
+
+    if (Object.keys(validationErrors.value).length > 0) return;
+
+    try {
+      await axios.put(
+        `http://localhost:5000/api/user/update/${user.value.walletAddress}`, // ✅ Sửa lỗi template literal
+        editUser.value,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      fetchUser();
+      isEditing.value = false;
+    } catch (error) {
+      console.error("Lỗi khi cập nhật user:", error);
+    }
+  };
+
+  // Sao chép địa chỉ ví
+  const copyWalletAddress = () => {
+    if (user.value.walletAddress) {
+      navigator.clipboard.writeText(user.value.walletAddress);
+      showCopyMessage.value = true;
+
+      // Ẩn thông báo sau 1 giây
+      setTimeout(() => (showCopyMessage.value = false), 1000);
+    }
+  };
+
+  // 🔥 Thêm các hàm xử lý giao dịch token
+  const openTokenModal = (action) => {
+    tokenAction.value = action;
+    tokenAmount.value = 0;
+    recipientWallet.value = "";
+    isTokenModalOpen.value = true;
+  };
+
+  const closeTokenModal = () => {
+    isTokenModalOpen.value = false;
+  };
+
+  // Xác nhận giao dịch token
+  const confirmTokenAction = async () => {
+    if (tokenAmount.value <= 0) {
+      alert("Vui lòng nhập số lượng token hợp lệ!");
+      return;
+    }
+
+    if (tokenAction.value === "withdraw" && !recipientWallet.value.trim()) {
+      alert("Vui lòng nhập địa chỉ ví nhận token!");
+      return;
+    }
+
+    try {
+      const endpoint =
+        tokenAction.value === "deposit"
+          ? "http://localhost:5000/api/token/deposit"
+          : "http://localhost:5000/api/token/withdraw";
+
+      const payload = {
+        walletAddress: user.value.walletAddress,
+        amount: tokenAmount.value,
+      };
+
+      if (tokenAction.value === "withdraw") {
+        payload.recipient = recipientWallet.value;
+      }
+
+      await axios.post(endpoint, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      alert("Giao dịch thành công!");
+      fetchUser(); // Cập nhật lại số dư token
+      closeTokenModal();
+    } catch (error) {
+      console.error("Lỗi khi thực hiện giao dịch:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+  };
+
+  </script>
+
 
 <style scoped>
 .data-tab-engine {
@@ -220,8 +302,8 @@ const updateUser = async () => {
   height: 700px;
   max-height: 700px;
   overflow-y: auto; /* Chỉ cuộn theo chiều dọc */
-  /* overscroll-behavior: contain; */
-  background: #f5f7fb36 !important;
+  overscroll-behavior: contain;
+  background: #F5F7FB !important;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -0%);
@@ -286,15 +368,23 @@ const updateUser = async () => {
 }
 
 .user-name {
+  width: 200px;
   position: relative;
-  margin-top: 10px;
+  /* margin-top: 10px; */
   font-size: 18px;
   font-weight: bold;
   color: black;
   text-align: center;
+  justify-content: center;
+  right: 50px;
 }
 /* Trạng thái online/offline */
 
+
+.select_main-image-top{
+  width: 100px;
+  
+}
 .status-dot {
   width: 6px;
   height: 6px;
@@ -405,7 +495,7 @@ const updateUser = async () => {
 }
 
 .account-info p + p {
-  border-top: 1px solid #ddd;
+  /* border-top: 1px solid #ddd; */
   padding-top: 10px;
   margin-top: 10px;
 }
@@ -502,6 +592,7 @@ button:focus {
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  color: #333;
 }
 
 .dropdown-btn:hover {
@@ -557,7 +648,7 @@ button:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
+  width: 85%;
   border: 1px solid #dedfdfa4;
   padding: 15px;
   border-radius: 8px;
@@ -802,4 +893,26 @@ input.error {
   color: red;
   font-weight: bold;
 }
+.copy-message {
+  position: fixed;
+  top: 170px;
+  right: 60px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+/* Hiệu ứng fade in/out */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+
 </style>

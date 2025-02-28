@@ -11,11 +11,10 @@
         @click="setActiveIcon('bell')"
       >
         <i
-          class="fas fa-bell icon"
+          class="fa-solid fa-user-lock"
           :class="{ 'icon-active': activeIcon === 'bell' }"
         ></i>
       </div>
-
       <div
         class="icon-container"
         :class="{ 'icon-active-container': activeIcon === 'comment' }"
@@ -32,8 +31,9 @@
         :class="{ 'icon-active-container': activeIcon === 'users' }"
         @click="setActiveIcon('users')"
       >
+
         <i
-          class="fas fa-users icon"
+          class="fa-solid fa-ranking-star"
           :class="{ 'icon-active': activeIcon === 'users' }"
         ></i>
       </div>
@@ -74,7 +74,7 @@
           ref="avatar"
           alt="User profile picture"
           class="avatar"
-          src="https://storage.googleapis.com/a1aa/image/7lBa4dTLolp7p8szWr9BosdarMGGKMwOqwk4lK7epn4.jpg"
+          src="https://i.pinimg.com/736x/9f/e7/9d/9fe79d570909a6c2004f81d36d69db04.jpg"
           @click="toggleDropdown"
         />
 
@@ -94,9 +94,12 @@
       <div v-if="activeIcon === 'comment'">
         <ChatList />
       </div>
-      <div v-if="activeIcon === 'users'"></div>
+      <div v-if="activeIcon === 'users'">
+        <Ranker />
+      </div>
       <div v-if="activeIcon === 'user-friends'">
-        <p>Friends content goes here.</p>
+
+       
       </div>
       <div v-if="activeIcon === 'cog'">
         <p>Settings content goes here.</p>
@@ -228,7 +231,7 @@ body {
 
 /* Đảm bảo dropdown vẫn hoạt động như mong muốn */
 .data-tab-engine {
-  width: 500px;
+  width: 400px;
   background-color: #f7fafc;
   border-left: 1px solid #e2e8f0;
   padding: 1rem;
@@ -267,6 +270,10 @@ import ChatView from "./ChatView.vue"; // Import component ChatBox
 
 import ChatList from "../components/ChatList.vue";
 import UserProfile from "../components/UserProfile.vue";
+import Ranker from "../components/Ranker.vue";
+
+
+
 
 export default {
   components: {
@@ -274,6 +281,9 @@ export default {
     UserProfile,
     ChatBox,
     ChatView,
+    Ranker,
+
+
   },
   data() {
     return {

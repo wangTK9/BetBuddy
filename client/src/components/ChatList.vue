@@ -22,7 +22,7 @@
       @click="selectUser(searchedUser)"
     >
       <img
-        :src="'/avatar-trang-4.jpg'"
+        :src="'https://i.pinimg.com/736x/db/d6/4f/dbd64f8b5f641068c191d01ad49d56c9.jpg'"
         :alt="searchedUser.fullName"
         class="searched-user-avatar"
       />
@@ -162,7 +162,7 @@ export default defineComponent({
 }
 
 .search-bar {
-  width: 100%;
+  width: 90%;
   padding: 12px;
   margin-bottom: 15px;
   border-radius: 8px;

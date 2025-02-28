@@ -16,6 +16,10 @@ import Login from "./views/Login.vue";
 import Poll from "./views/Poll.vue";
 import Bet from "./views/Bet.vue";
 
+import PinPoll from "./views/PinnedPoll.vue";
+import Ranker from "./views/Ranker.vue";
+
+
 // Import Vue Socket.IO
 import { io } from "socket.io-client";
 import { createSocket } from "./plugins/socket"; // Tạo plugin cho Socket.IO
@@ -51,6 +55,9 @@ const router = createRouter({
     // { path: "/chat", component: Chat },
     { path: "/poll", component: Poll },
     { path: "/bet", component: Bet },
+    { path: "/pin", component: PinPoll },
+    { path: "/ranker", component: Ranker },
+
   ],
 });
 

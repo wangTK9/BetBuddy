@@ -13,40 +13,41 @@
         </div>
       </div>
 
-      <!-- Bước 1 -->
+      <!-- Step 1 -->
       <div v-if="step === 1" class="step-container">
-        <h2>Bước 1: Nhập tên của bạn</h2>
-        <input type="text" v-model="user.fullName" placeholder="Nhập tên" />
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Hiển thị thông báo lỗi -->
-        <button @click="nextStep">Tiếp tục</button>
+        <h2>Step 1: Enter your name</h2>
+        <input type="text" v-model="user.fullName" placeholder="Enter your name" />
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Display error message -->
+        <button @click="nextStep">Continue</button>
       </div>
 
-      <!-- Bước 2 -->
+      <!-- Step 2 -->
       <div v-else-if="step === 2" class="step-container">
-        <h2>Bước 2: Chọn ngày sinh</h2>
+        <h2>Step 2: Select your birth date</h2>
         <input type="date" v-model="user.birthDate" />
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Hiển thị thông báo lỗi -->
-        <button @click="nextStep">Tiếp tục</button>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Display error message -->
+        <button @click="nextStep">Continue</button>
       </div>
 
-      <!-- Bước 3 -->
+      <!-- Step 3 -->
       <div v-else-if="step === 3" class="step-container">
-        <h2>Bước 3: Đăng nhập vào ví</h2>
+        <h2>Step 3: Log in to your wallet</h2>
         <LeapLogin />
         <PrivyLogin />
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Hiển thị thông báo lỗi -->
-        <button @click="nextStep">Tiếp tục</button>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Display error message -->
+        <button @click="nextStep">Continue</button>
       </div>
 
-      <!-- Bước 4 -->
+      <!-- Step 4 -->
       <div v-else-if="step === 4" class="step-container">
-        <h2>Bước 4: Đăng nhập nè</h2>
-        <input type="email" v-model="user.email" placeholder="Nhập email" />
-        <button class="login-btn" @click="login">🔑 Đăng nhập</button>
+        <h2>Step 4: Login</h2>
+        <input type="email" v-model="user.email" placeholder="Enter your email" />
+        <button class="login-btn" @click="login">🔑 Login</button>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -68,29 +69,28 @@ const user = ref({
   bio: "",
 });
 
-const errorMessage = ref("");  // Thêm biến thông báo lỗi
+const errorMessage = ref(""); // Error message variable
 
-// Tính phần trăm progress bar
+// Compute progress bar percentage
 const progressPercentage = computed(() => `${(step.value - 1) * 33.33}%`);
 
-// Chuyển bước & kiểm tra dữ liệu nhập vào
+// Move to the next step & validate input data
 const nextStep = () => {
   if (step.value === 1 && !user.value.fullName.trim()) {
-    errorMessage.value = "Nhập tên của ông chủ dô dùm em đi ạ!!!";  // Cập nhật thông báo lỗi
+    errorMessage.value = "Please enter your name!"; // Update error message
     return;
   }
   if (step.value === 2 && !user.value.birthDate) {
-    errorMessage.value = "Em muốn biết sinh nhật của ông chủ ạ >.<"; // Lỗi khi không chọn ngày sinh
+    errorMessage.value = "Please select your birth date!"; // Error when birth date is not selected
     return;
   }
-  errorMessage.value = "";  // Xóa thông báo lỗi khi người dùng đã nhập đầy đủ thông tin
+  errorMessage.value = ""; // Clear error message when the user inputs valid data
   step.value++;
 };
 
-
-// Gửi dữ liệu lên server
+// Send data to the server
 const login = async () => {
-  console.log("📌 Dữ liệu trước khi gửi:", JSON.stringify(user.value, null, 2));
+  console.log("📌 Data before sending:", JSON.stringify(user.value, null, 2));
 
   try {
     const response = await fetch("http://localhost:5000/api/user/register", {
@@ -101,19 +101,20 @@ const login = async () => {
 
     const result = await response.json();
     if (response.ok) {
-      console.log("✅ Đăng ký thành công:", result);
-      alert("Đăng ký thành công!");
+      console.log("✅ Registration successful:", result);
+      alert("Registration successful!");
       router.push("/home");
     } else {
-      console.error("❌ Lỗi đăng ký:", result);
-      alert(result.message || "Lỗi khi đăng ký.");
+      console.error("❌ Registration error:", result);
+      alert(result.message || "Error during registration.");
     }
   } catch (error) {
-    console.error("❌ Lỗi kết nối server:", error);
-    alert("Không thể kết nối tới server.");
+    console.error("❌ Server connection error:", error);
+    alert("Cannot connect to the server.");
   }
 };
 </script>
+
 
 <style scoped>
 @keyframes pulse {
@@ -147,7 +148,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f4f4f4;
+  background: #98dfa5;
 }
 
 .container {
@@ -156,6 +157,8 @@ html {
   align-items: center;
   width: 100%;
   height: 100vh;
+
+  background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
 }
 
 /* Container chính */
@@ -164,7 +167,7 @@ html {
   width: 450px;
   margin: auto;
   padding: 20px;
-  background: #fff;
+  /* background: #fff; */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 

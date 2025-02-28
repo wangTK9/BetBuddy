@@ -2,88 +2,62 @@
   <div class="container_poll-main">
     <div class="poll-container" :class="{ expanded: settingsOpen }">
       <div class="poll-content">
-        <button class="close-btn" @click="closeForm">×</button>
-        <h2>Tạo bình chọn</h2>
-        <textarea
-          v-model="question"
-          placeholder="Đặt câu hỏi bình chọn"
-          maxlength="200"
-        ></textarea>
+        <h2>Create Poll</h2>
+        <textarea v-model="question" placeholder="Enter poll question" maxlength="200"></textarea>
         <div class="char-count">{{ charCount }}/200</div>
 
+        <input class="link_add" placeholder="Reference link"> <pre>
+        </pre>
+
         <div class="options">
-          <div
-            class="option-item"
-            v-for="(option, index) in options"
-            :key="index"
-          >
-            <input
-              type="text"
-              v-model="option.text"
-              :placeholder="'Lựa chọn ' + (index + 1)"
-            />
-            <button
-              v-if="index >= 2"
-              @click="removeOption(index)"
-              class="remove-option"
-            >
-              X
-            </button>
+          <div class="option-item" v-for="(option, index) in options" :key="index">
+            <input type="text" v-model="option.text" :placeholder="'Option ' + (index + 1)" />
+            <button v-if="index >= 2" @click="removeOption(index)" class="remove-option">X</button>
           </div>
-          <button @click="addOption" id="addOption">+ Thêm lựa chọn</button>
+          <button @click="addOption" id="addOption">+ Add Option</button>
         </div>
 
         <div class="bottom-bar">
           <div class="left-buttons">
-            <button @click="cancel">Hủy</button>
-            <button :disabled="!canCreate" @click="create">
-              Tạo bình chọn
-            </button>
+            <button @click="closeForm">Cancel</button>
+            <button :disabled="!canCreate" @click="create">Create Poll</button>
           </div>
           <button id="settingsBtn" @click="toggleSettings">⚙️</button>
         </div>
       </div>
 
       <div class="settings-container" :class="{ open: settingsOpen }">
-        <h3>Cài đặt</h3>
-        <label id="header-setting">Thời hạn bình chọn</label>
-        <input
-          type="datetime-local"
-          :value="formattedExpirationTime"
-          @input="updateExpirationTime"
-        />
+        <h3>Settings</h3>
+        <label id="header-setting">Poll Expiration Time</label>
+        <input type="datetime-local" :value="formattedExpirationTime" @input="updateExpirationTime" />
 
-        <div class="hr_content">
-          <hr />
-        </div>
-        <label id="header-setting">Thiết lập nâng cao</label>
+        <div class="hr_content"><hr /></div>
+        <label id="header-setting">Advanced Settings</label>
         <label>
-          <span>Ghim lên đầu trò chuyện</span>
+          <span>Pin to top of chat</span>
           <label class="toggle-switch">
             <input type="checkbox" v-model="pinChat" />
             <span class="slider"></span>
           </label>
         </label>
         <label>
-          <span>Chọn nhiều phương án</span>
+          <span>Allow multiple choices</span>
           <label class="toggle-switch">
             <input type="checkbox" v-model="multipleOptions" checked />
             <span class="slider"></span>
           </label>
         </label>
         <label>
-          <span>Có thể thêm phương án</span>
+          <span>Allow adding options</span>
           <label class="toggle-switch">
             <input type="checkbox" v-model="canAddOptions" />
             <span class="slider"></span>
           </label>
         </label>
-        <div class="hr_content">
-          <hr />
-        </div>
-        <label id="header-setting">Bình chọn ẩn danh</label>
+        <div class="hr_content"><hr /></div>
+        <label id="header-setting">Anonymous Voting</label>
         <label>
-          <span>Ẩn người bình chọn</span>
+          <span>Hide voter identities</span>
           <label class="toggle-switch">
             <input type="checkbox" v-model="anonymous" />
             <span class="slider"></span>
@@ -93,6 +67,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -123,12 +98,13 @@ export default {
     formattedExpirationTime() {
       if (!this.expirationTime) return "";
       const date = new Date(this.expirationTime);
-      return date.toISOString().slice(0, 16); // Hiển thị "YYYY-MM-DDTHH:mm"
+      return date.toISOString().slice(0, 16);
     },
   },
   methods: {
     closeForm() {
-      this.$emit("close");
+      console.log("Đóng form");
+      this.$emit("close");  // Emit event về parent để đóng popup
     },
     addOption() {
       if (this.options.length < 3) {
@@ -140,13 +116,8 @@ export default {
         this.options.splice(index, 1);
       }
     },
-    cancel() {
-      this.$emit("cancel");
-    },
     updateExpirationTime(event) {
-      this.expirationTime = event.target.value
-        ? new Date(event.target.value).toISOString()
-        : null;
+      this.expirationTime = event.target.value ? new Date(event.target.value).toISOString() : null;
     },
     create() {
       if (!this.canCreate) return;
@@ -170,6 +141,7 @@ export default {
         .then((response) => {
           console.log("✅ Bình chọn đã gửi thành công:", response.data);
           this.$emit("poll-created", response.data);
+          this.closeForm(); // Đóng form sau khi tạo thành công
         })
         .catch((error) => {
           console.error("❌ Lỗi khi gửi bình chọn:", error);
@@ -182,6 +154,8 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
 * {
   box-sizing: border-box;
@@ -190,13 +164,13 @@ export default {
   font-family: Arial, sans-serif;
 }
 
-.container_poll-main {
+/* .container_poll-main {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #f9f9f9;
-}
+} */
 
 .poll-container {
   background: white;
@@ -261,7 +235,14 @@ textarea {
   outline: none;
   font-size: 14px;
 }
-
+.link_add{
+ flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+}
 .remove-option {
   color: rgb(9, 9, 9);
   border: none;
