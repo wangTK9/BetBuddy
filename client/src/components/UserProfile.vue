@@ -184,44 +184,50 @@ const updateUser = async () => {
 
 
 <style scoped>
-.data-tab-engine{
 
-}
-.content_main_header_profile{
+.content_main_header_profile {
   position: relative;
-  max-width: 450px;
+  max-width: 470px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
 }
+
 .container_profile-user {
+  margin-top: 10px;
   position: relative;
-  max-width: 90%;
-  height: 700px;
-  max-height: 700px;
-  overflow-y: auto; /* Chỉ cuộn theo chiều dọc */
-  /* overscroll-behavior: contain; */
-  background: #f5f7fb36 !important;
-  top: 50%;
+  border-radius: 12px;
+  overflow-y: auto;
+  background: #f9f9f9;
+  margin-top: 25px;
   left: 50%;
-  transform: translate(-50%, -0%);
-  z-index: 2;
+  transform: translate(-50%, -5%);
+  padding: 10px;
 }
 
 .select_main-profile {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 50px;
+  padding: 12px;
   border-bottom: 1px solid #ddd;
-  background: #f9f9f9;
+  background: #f5f7fb;
+  font-size: 16px;
+  color: #7c3aed;
 }
 
 .select_main-profile-image {
   display: flex;
+  margin-top: 16px;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 160px;
   background: #f7f7ff;
 }
+
 .select_main-profile-bio {
   display: flex;
   justify-content: center;
@@ -229,27 +235,29 @@ const updateUser = async () => {
   flex-direction: column;
   height: 100px;
   background: #f9f9f9;
+  padding: 10px;
+  text-align: center;
 }
+
 .select-main-bio-top {
   max-width: 100%;
   width: 400px;
-  height: 70px;
-  border-radius: 5%;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, 0%);
-  position: absolute;
+  height: auto;
+  border-radius: 8px;
+  position: relative;
 }
+
 .content-bio {
-  text-align: start;
+  text-align: center;
   max-width: 100%;
-  height: 70px;
-  border-radius: 5%;
-  padding: 10px; /* Thêm khoảng cách nội dung */
-  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến kích thước tổng thể */
-  overflow: hidden; /* Ẩn phần nội dung vượt ra ngoài */
-  text-overflow: ellipsis; /* Hiển thị ba chấm nếu nội dung vượt quá */
-  white-space: pre-line; /* Ngăn không cho văn bản xuống dòng */
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #666;
+  
 }
 
 .profile-avatar {
@@ -257,109 +265,60 @@ const updateUser = async () => {
   height: 90px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid black;
-  top: 10px;
-  position: relative;
+  border: 3px solid #bcadd6;
 }
 
 .user-name {
-  position: relative;
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: 18px;
   font-weight: bold;
   color: black;
   text-align: center;
 }
-/* Trạng thái online/offline */
 
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  bottom: 15px;
+  margin-left: 18px;
   display: inline-block;
-  position: relative;
   text-align: center;
 }
 
 .online {
-  background-color: #4caf50; /* Xanh lá - Online */
+  background-color: #4caf50;
 }
 
 .online::after {
-  content: " Online"; /* Thêm chữ "Online" */
-  margin-left: 20px; /* Khoảng cách giữa trạng thái và chữ */
-  margin-top: -5px;
-  position: absolute;
+  content: " Online";
+  margin-left: 6px;
   font-size: 14px;
-  color: #4caf50; /* Màu chữ phù hợp với trạng thái */
+  color: #4caf50;
 }
 
 .offline {
-  background-color: #f44336; /* Đỏ - Offline */
+  background-color: #f44336;
 }
 
 .offline::after {
-  content: " Offline"; /* Thêm chữ "Offline" */
-  margin-left: 8px; /* Khoảng cách giữa trạng thái và chữ */
-  margin-top: -5px;
-  position: absolute;
+  content: " Offline";
+  margin-left: 6px;
   font-size: 14px;
-  color: #f44336; /* Màu chữ phù hợp với trạng thái */
+  color: #f44336;
 }
 
-.profile-right {
-  position: relative;
-  cursor: pointer;
-}
-
-.menu-icon {
-  font-size: 24px;
-  user-select: none;
-  color: black;
-}
-
-.dropdown {
-  width: 100px;
-  height: 50px;
-  position: absolute;
-  top: 30px;
-  right: 0;
-  background: rgb(251, 251, 251);
-  color: black;
-  z-index: 10;
-}
-
-.dropdown button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background: rgb(255, 255, 255);
-  cursor: pointer;
-  text-align: left;
-  color: black;
-}
-
-.dropdown button:hover {
-  background: rgb(78, 75, 74);
-}
 .account-info {
-  width: 80%;
-  margin-top: 20px;
-  padding: 0px;
+  width: 90%;
+  margin: 20px auto;
+  padding: 15px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 1px rgba(224, 224, 224, 0.1);
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -5%);
+  box-shadow: 0 1px 2px rgba(224, 224, 224, 0.1);
 }
 
 .account-info p {
-  font-size: 16px;
-  margin-bottom: 15px;
+  font-size: 14px;
+  margin-bottom: 10px;
   color: #333;
 }
 
@@ -368,416 +327,81 @@ const updateUser = async () => {
   color: #555;
 }
 
-.wallet {
-  color: #0071c2;
-  font-weight: bold;
-}
-
-.account-info p:last-child {
-  margin-bottom: 0; /* Không có khoảng cách dưới cùng */
-}
-
-.account-info p span {
-  word-wrap: break-word; /* Đảm bảo địa chỉ ví không bị tràn ra ngoài */
-}
-
-.account-info p + p {
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
-  margin-top: 10px;
-}
-button {
-  background-color: #0071c2; /* Màu nền */
-  color: white; /* Màu chữ */
-  padding: 4px 8px; /* Khoảng cách trong nút (bé hơn nữa) */
-  border: none; /* Loại bỏ viền */
-  border-radius: 12px; /* Các góc bo tròn nhẹ */
-  font-size: 12px; /* Kích thước chữ nhỏ hơn */
-  cursor: pointer; /* Con trỏ khi di chuột lên nút */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng chuyển màu nền và phóng to khi hover */
-}
-
-button:hover {
-  background-color: #005fa3; /* Màu nền khi hover */
-  transform: scale(1.1); /* Tăng nhẹ kích thước nút khi hover */
-}
-
-button:focus {
-  outline: none; /* Loại bỏ đường viền khi nút được nhấn */
-}
-.edit-form {
-  width: 80%;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 20px;
-
-  margin: 0 auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.edit-form label {
-  display: block;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333; /* Màu chữ */
-}
-
-.edit-form input {
+.dropdown-btn {
+  background-color: #007BFF;
+  color: white;
   width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ffffff;
-  border-radius: 5px;
-  font-size: 14px;
-  box-sizing: border-box; /* Đảm bảo không bị tràn */
-}
-
-.edit-form input:focus {
-  border-color: #0071c2; /* Màu viền khi focus */
-  outline: none; /* Loại bỏ outline mặc định */
-}
-
-.btn-group {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.save-btn,
-.cancel-btn {
-  padding: 8px 16px;
-  margin-left: 10px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dropdown-btn button:hover {
+  background-color: #005fa3;
+  transform: scale(1.05);
+}
+
+.dropdown-btn button:focus {
+  outline: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  margin-top: 10px;
+  transition: max-height 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+}
+
+/* Nút toggle ví */
+button {
+  background-color: #007BFF;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.save-btn {
-  background-color: #28a745; /* Màu xanh lá cho nút lưu */
-  color: white;
-}
-
-.save-btn:hover {
-  background-color: #218838;
-}
-
-.cancel-btn {
-  background-color: #dc3545; /* Màu đỏ cho nút hủy */
-  color: white;
-}
-
-.cancel-btn:hover {
-  background-color: #c82333;
-}
-.dropdown-btn {
-  margin: 10px 0;
-  padding: 8px 12px;
-  background-color: #F5F7FB;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.dropdown-btn:hover {
-  background-color: rgb(159, 193, 237);
-  transform: none;
-}
-
-/* Style cho profile */
-.account-info,
-.edit-form {
-  border: 1px solid #f6f6f6;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.edit-form input {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 5px;
-  z-index: 4;
-}
-
-.btn-group {
-  display: flex;
-  justify-content: space-between;
-}
-
-.save-btn {
-  background-color: green;
-  color: white;
-  padding: 8px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.cancel-btn {
-  background-color: red;
-  color: white;
-  padding: 8px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-.parent-container {
-  display: grid;
-  place-items: center;
-}
-
-.dropdown-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 80%;
-  border: 1px solid #dedfdfa4;
-  padding: 15px;
-  border-radius: 8px;
-  background: #f5f7fb60;
-  cursor: pointer;
-}
-
-.dropdown-btn i {
-  font-size: 16px;
-  color:#7b7b7bc5;
-}
-.dropdown-content {
-  width: 100%;
-  overflow: hidden;
-  background: #f9f9f9;
-
-  transition: max-height 0.4s ease-in-out;
-}
-
-/* Vue Transition */
-.slide-enter-active,
-.slide-leave-active {
-  transition: max-height 0.4s ease-in-out, opacity 0.4s;
-}
-
-.slide-enter,
-.slide-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-/* Modal - Hiển thị giữa màn hình và đè lên các thẻ khác */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Làm mờ nền */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-/* Nội dung modal */
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Hiệu ứng fade in */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Input */
-.modal-content label {
-  display: block;
-  font-weight: bold;
-  text-align: left;
-  margin-top: 10px;
-}
-
-
-/* Nhóm nút */
-.btn-group {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-around;
-}
-
-/* Nút Lưu */
-.save-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.save-btn:hover {
+button:hover {
   background-color: #0056b3;
 }
 
-/* Nút Hủy */
-.cancel-btn {
-  background-color: #dc3545;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: 0.3s;
+.wallet {
+  /* Chỉnh sửa phần địa chỉ ví */
+  color: #007BFF; /* Màu địa chỉ ví */
+  font-weight: 600;
+  word-wrap: break-word; /* Đảm bảo địa chỉ ví xuống dòng khi cần thiết */
+  white-space: normal; /* Cho phép nội dung xuống dòng nếu quá dài */
+  overflow-wrap: break-word; /* Đảm bảo từ dài không bị tràn ra ngoài */
+  word-break: break-all; /* Cắt chữ nếu quá dài */
+  display: block; /* Đảm bảo nó chiếm hết chiều rộng */
+  max-width: 100%; /* Giới hạn chiều rộng */
+
 }
 
-.cancel-btn:hover {
-  background-color: #a71d2a;
-}
-/* Modal - Hiển thị giữa màn hình và đè lên các thẻ khác */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Làm mờ nền */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
-/* Nội dung modal */
-.modal-content {
-  background: white;
-  padding: 25px; /* Tăng padding để form trông thoáng hơn */
-  border-radius: 8px;
-  width: 450px; /* Tăng kích thước form */
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-  top: -70px; /* Nhích form lên trên */
-}
-
-/* Hiệu ứng fade in */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Input */
-.modal-content label {
-  display: block;
-  font-weight: bold;
-  text-align: left;
-  margin-top: 10px;
-}
-
-.modal-content input {
-  width: 100%;
-  height: 50px;
-  margin-top: 5px;
-  border: 1px solid #ffffff;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-/* Nhóm nút */
-.btn-group {
-  margin-top: 15px;
-  display: flex;
-  justify-content: flex-end; /* Đẩy nút về bên phải */
-  gap: 10px; /* Tạo khoảng cách giữa các nút */
-}
-
-/* Nút Lưu */
-.save-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.save-btn:hover {
-  background-color: #0056b3;
-}
-
-/* Nút Hủy */
-.cancel-btn {
-  background-color: #dc3545;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.cancel-btn:hover {
-  background-color: #a71d2a;
-}
-.error{
-  color: red;
-  height: 5px;
-  font-size: 15px;
-}
-
-.input-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.error-icon {
-  position: absolute;
-  right: 10px;
-  color: red;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-input.error {
-  border: 2px solid red;
-}
-.input-group {
-  position: relative;
-  margin-bottom: 15px;
-}
-
-.error-icon {
-  font-size: 25px;
-  position: absolute;
-  right: 20px;
-  top: 60%;
-  transform: translateY(-50%);
-  color: red;
-  font-weight: bold;
-}
 </style>

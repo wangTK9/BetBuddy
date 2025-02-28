@@ -63,7 +63,7 @@ const user = ref({
   fullName: "",
   birthDate: "",
   walletAddress:
-    authStore.walletAddress || localStorage.getItem("walletAddress") || "",
+    authStore.walletAddress || localStorage.getItem("walletAddress") || "celestia14lqsz0sa6gqyn2ryvc7sagd86vs0f982u86ck3",
   email: "",
   bio: "",
 });

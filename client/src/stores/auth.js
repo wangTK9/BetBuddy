@@ -4,7 +4,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
-    walletAddress: null,
+    walletAddress: "celestia14lqsz0sa6gqyn2ryvc7sagd86vs0f982u86ck3" || null,
     selectedUserWalletAddress: null, // Đổi tên để rõ ràng hơn
   }),
   actions: {
