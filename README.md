@@ -45,7 +45,7 @@ $ node src/app.js
 Mọi đóng góp từ cộng đồng đều được hoan nghênh! Hãy tạo **Pull Request** hoặc **Issue** để thảo luận và cải tiến ứng dụng.
 
 ## 📜 Giấy phép
-Dự án được phát hành theo giấy phép **MIT**, bạn có thể sử dụng và phát triển thêm theo nhu cầu.
+Dự án được phát hành theo giấy phép **VHU**, bạn có thể sử dụng và phát triển thêm theo nhu cầu.
 
 ---
 ✉️ **Liên hệ**: Nếu có bất kỳ câu hỏi nào, hãy kết nối với chúng tôi qua email hoặc Telegram! 🚀
