@@ -1,27 +1,29 @@
 # 🗨️ Decentralized Chat App with Celestia
 
 ## 🚀 Giới thiệu
-Ứng dụng chat phi tập trung cho phép bạn nhắn tin với bạn bè, tạo nhóm và đặc biệt là liên kết đến ví thông qua **Celestia** để lưu trữ dữ liệu an toàn. Ngoài ra, ứng dụng hỗ trợ mở **bình chọn trong phòng chat**, giúp các thành viên có thể đưa ra quyết định một cách dân chủ.
+Chào mừng bạn đến với **Decentralized Chat App**, một ứng dụng nhắn tin phi tập trung giúp bạn kết nối với bạn bè và cộng đồng một cách an toàn và bảo mật. Với sự hỗ trợ của **Celestia**, ứng dụng không chỉ cho phép nhắn tin, tạo nhóm mà còn tích hợp **bình chọn bằng token**, giúp các thành viên đưa ra quyết định và nhận phần thưởng xứng đáng.
 
-## 🎯 Tính năng chính
-- 💬 **Nhắn tin cá nhân & nhóm**: Kết nối và trò chuyện với bạn bè hoặc tạo nhóm chat.
-- 🔗 **Tích hợp ví với Celestia**: Lưu trữ tin nhắn trên mạng phi tập trung, đảm bảo quyền riêng tư và bảo mật.
-- 🗳️ **Bình chọn trong phòng chat bằng token**: Thành viên có thể mở bình chọn và sử dụng số token trong ví để tham gia.
-- 🎁 **Trả thưởng cho bình chọn đúng**: Người có dự đoán đúng trong bình chọn sẽ nhận được phần thưởng.
-- 🏆 **Bảng xếp hạng**: Hiển thị danh sách người dùng có nhiều lượt bình chọn chính xác nhất.
-- 🔒 **Mã hóa dữ liệu**: Tin nhắn được bảo mật và chỉ người trong nhóm mới có thể xem nội dung.
-- 🌍 **Giao diện thân thiện**: Trải nghiệm mượt mà với UI/UX tối ưu.
+## 🎯 Tính năng nổi bật
+- 💬 **Nhắn tin cá nhân & nhóm**: Giao tiếp dễ dàng với bạn bè hoặc lập nhóm trò chuyện.
+- 🔗 **Tích hợp ví với Celestia**: Lưu trữ tin nhắn phi tập trung, đảm bảo quyền riêng tư tối đa.
+- 🗳️ **Bình chọn bằng token**: Sử dụng số token trong ví để tham gia bình chọn ngay trong phòng chat.
+- 🎁 **Trả thưởng minh bạch**: Thành viên dự đoán đúng sẽ nhận được phần thưởng từ hệ thống.
+- 🏆 **Bảng xếp hạng**: Thống kê và hiển thị người có nhiều lượt bình chọn chính xác nhất.
+- 🔒 **Mã hóa & bảo mật dữ liệu**: Mọi tin nhắn đều được mã hóa, bảo vệ tối đa quyền riêng tư.
+- 🌍 **Giao diện trực quan & dễ sử dụng**: Thiết kế hiện đại, trải nghiệm mượt mà.
 
 ## 🏗️ Công nghệ sử dụng
-- **Frontend**: Vue.js
-- **Backend**: Node.js / Express.js
-- **Blockchain**: Celestia
-- **Database**: MongoDB / Firebase / Celestia (lưu trữ thông tin ví & token của người dùng)
+- **Frontend**: Vue.js (UI linh hoạt và mượt mà)
+- **Backend**: Node.js / Express.js (Xử lý nhanh, mạnh mẽ)
+- **Blockchain**: Celestia (Lưu trữ tin nhắn và thông tin ví một cách phi tập trung)
+- **Database**: MongoDB / Firebase / Celestia (Lưu trữ dữ liệu người dùng và token)
 - **Authentication**: Wallet-based login (MetaMask, WalletConnect,...)
-- **Realtime Database**: Firebase
+- **Realtime Database**: Firebase (Đồng bộ dữ liệu tức thời)
 
 ## 🖼️ Hình ảnh minh họa
-_(Đang cập nhật...)_
+![Giao diện ứng dụng](./client/public/demo.png)
+
+
 
 ## 📦 Cài đặt & Chạy thử
 ```sh
@@ -40,11 +42,11 @@ $ node src/app.js
 ```
 
 ## 🌟 Đóng góp
-Mọi đóng góp đều được chào đón! Hãy mở **Pull Request** hoặc **Issue** nếu bạn có ý tưởng cải tiến.
+Mọi đóng góp từ cộng đồng đều được hoan nghênh! Hãy tạo **Pull Request** hoặc **Issue** để thảo luận và cải tiến ứng dụng.
 
 ## 📜 Giấy phép
-Dự án được phát hành dưới giấy phép **VHU**.
+Dự án được phát hành theo giấy phép **MIT**, bạn có thể sử dụng và phát triển thêm theo nhu cầu.
 
 ---
-✉️ Nếu có bất kỳ câu hỏi nào, hãy liên hệ với chúng tôi qua email hoặc Telegram!
+✉️ **Liên hệ**: Nếu có bất kỳ câu hỏi nào, hãy kết nối với chúng tôi qua email hoặc Telegram! 🚀
 
